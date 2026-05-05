@@ -32,3 +32,4 @@ Thumbs.db
 # Project uploads
 uploads/Disposable/
 *.rar
+.vercel
