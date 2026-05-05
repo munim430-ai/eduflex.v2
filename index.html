@@ -96,18 +96,6 @@
       .orb-2 { animation: orb-float-2 25s ease-in-out infinite, orb-pulse 10s ease-in-out infinite reverse; }
       .orb-3 { animation: orb-float-1 18s ease-in-out infinite reverse, orb-pulse 6s ease-in-out infinite; }
 
-      /* Particle Network Canvas */
-      #particle-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 1;
-        opacity: 0.5;
-      }
-
       /* Magnetic Button Effect */
       .magnetic-btn {
         transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -191,11 +179,6 @@
       .ripple:active::after {
         width: 300px;
         height: 300px;
-      }
-
-      /* Scroll Velocity Skew */
-      .velocity-skew {
-        transition: transform 0.15s ease-out;
       }
 
       /* Stagger Reveal */
@@ -708,7 +691,7 @@
         { name: "Sharif Ahmed",         role: "Office Administrator",           bio: "First friendly face you meet at our Sylhet office. Coordinates appointments, files, and logistics.", img: "assets/team/sharif.jpg" },
         { name: "Raisa Afrin",          role: "Front Desk Executive",           bio: "Welcomes every visitor and routes inquiries to the right counsellor on the team.", img: "assets/team/raisa.jpg" },
         { name: "Aysha Humayra",        role: "HR",                             bio: "Looks after the people who look after our students.", img: "" },
-        { name: "Asadur Rahman",        role: "Office Coordinator",             bio: "Coordinates day-to-day operations across counsellors, students, and partners.", img: "" },
+        { name: "Asadur Rahman",        role: "Office Coordinator",             bio: "Coordinates day-to-day operations across counsellors, students, and partners.", img: "assets/team/asadur.jpg", imgPos: "center top" },
       ];
 
       const ENGAGEMENT_PHOTOS = [
@@ -907,9 +890,9 @@
 
         // Two-line hero structure for maximum impact
         const line1 = ["Your", "compass"];
-        const line2 = ["to a", "global", "degree."];
+        const line2 = ["to", "success"];
         const line1Depths = [20, 30];
-        const line2Depths = [15, 40, 25];
+        const line2Depths = [15, 25];
 
         return (
           <section ref={containerRef} id="top" className={`relative min-h-screen pt-20 sm:pt-28 overflow-hidden grain perspective-container ${dark ? "hero-dark" : "bg-white"}`}>
@@ -984,7 +967,7 @@
                           initial={{ y: "100%", opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
                           transition={{ delay: 0.5 + (i * 0.08), duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                          className={`hero-word inline-block ${word.includes("global") || word.includes("degree") ? "accent-text" : "text-ink"}`}
+                          className={`hero-word inline-block ${word.includes("success") ? "accent-text" : "text-ink"}`}
                           whileHover={{ scale: 1.02 }}
                         >
                           {word}
@@ -1443,7 +1426,7 @@
                       <div className="aspect-square relative overflow-hidden bg-zinc-100">
                         {m.img ? (
                           <>
-                            <img src={m.img} alt={m.name} referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-110" style={{ objectPosition: 'center 20%' }} />
+                            <img src={m.img} alt={m.name} referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-110" style={{ objectPosition: m.imgPos || 'center 20%' }} />
                             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                           </>
                         ) : (
@@ -1850,56 +1833,6 @@
         return <canvas ref={canvasRef} style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9998 }} />;
       }
 
-      // ── Particle Network Canvas ──────────────────────────────────────────────
-      function ParticleCanvas() {
-        const canvasRef = useRef(null);
-        useEffect(() => {
-          const canvas = canvasRef.current;
-          const ctx = canvas.getContext("2d");
-          let w = canvas.width = window.innerWidth;
-          let h = canvas.height = window.innerHeight;
-          const particles = Array.from({ length: 60 }, () => ({
-            x: Math.random() * w, y: Math.random() * h,
-            vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
-            r: Math.random() * 2 + 1
-          }));
-          const onResize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
-          window.addEventListener("resize", onResize);
-          let raf;
-          function tick() {
-            ctx.clearRect(0, 0, w, h);
-            for (const p of particles) {
-              p.x += p.vx; p.y += p.vy;
-              if (p.x < 0 || p.x > w) p.vx *= -1;
-              if (p.y < 0 || p.y > h) p.vy *= -1;
-              ctx.beginPath();
-              ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-              ctx.fillStyle = "rgba(238,90,43,0.35)";
-              ctx.fill();
-            }
-            for (let i = 0; i < particles.length; i++) {
-              for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 120) {
-                  ctx.beginPath();
-                  ctx.moveTo(particles[i].x, particles[i].y);
-                  ctx.lineTo(particles[j].x, particles[j].y);
-                  ctx.strokeStyle = `rgba(238,90,43,${0.12 * (1 - dist / 120)})`;
-                  ctx.lineWidth = 0.8;
-                  ctx.stroke();
-                }
-              }
-            }
-            raf = requestAnimationFrame(tick);
-          }
-          tick();
-          return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", onResize); };
-        }, []);
-        return <canvas ref={canvasRef} id="particle-canvas" />;
-      }
-
       // ── Cinematic Intro ──────────────────────────────────────────────────────
       function CinematicIntro() {
         const [done, setDone] = useState(false);
@@ -1965,7 +1898,6 @@
             <CinematicIntro />
             <ScrollProgressBar />
             <CursorTrail />
-            <ParticleCanvas />
             <Navbar />
             <Hero dark={t.darkHero} />
             <Destinations />
