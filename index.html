@@ -1,0 +1,1988 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduFlex Global — Your Compass to Success</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js" crossorigin="anonymous"></script>
+    <style>
+      :root {
+        --accent: #EE5A2B;
+        --accent-soft: #FFE7DD;
+        --ink: #1a1714;
+        --ink-2: #27272a;
+        --paper: #fffdf9;
+        --paper-2: #fdf9f5;
+        --paper-3: #f5f0eb;
+        --rule: #e8e0d8;
+        --muted: #a09585;
+      }
+      html { scroll-behavior: smooth; }
+      body {
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+        font-feature-settings: "ss01", "cv11";
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+      .font-display { font-family: "Inter", sans-serif; font-weight: 900; font-style: italic; letter-spacing: -0.04em; text-transform: uppercase; }
+      .font-mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+      .font-serif { font-family: "Fraunces", serif; }
+      .tracking-mega { letter-spacing: 0.4em; }
+      .tracking-ultra { letter-spacing: 0.6em; }
+      .accent-text { color: var(--accent); }
+      .accent-bg { background: var(--accent); }
+      .accent-border { border-color: var(--accent); }
+      .accent-soft-bg { background: var(--accent-soft); }
+      .rule-border { border-color: var(--rule); }
+      .text-ink { color: var(--ink); }
+      .grain { position: relative; }
+      .grain::after {
+        content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.04;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+        mix-blend-mode: multiply;
+      }
+      .marquee { display: flex; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+      .marquee-track { display: flex; gap: 4rem; padding-right: 4rem; animation: marquee 40s linear infinite; }
+      @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+      @keyframes float-y { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+      @keyframes spin-slow { to { transform: rotate(360deg); } }
+      @keyframes spin-rev { to { transform: rotate(-360deg); } }
+      .animate-float { animation: float-y 5s ease-in-out infinite; }
+      .animate-spin-slow { animation: spin-slow 60s linear infinite; }
+      .animate-spin-rev { animation: spin-rev 40s linear infinite; }
+      .clip-arrow { clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%); }
+      input::placeholder, textarea::placeholder { color: var(--muted); }
+
+      /* Dark hero variant */
+      .hero-dark { background: var(--ink); color: white; }
+      .hero-dark .rule { border-color: rgba(255,255,255,0.08); }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar { width: 10px; height: 10px; }
+      ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 0; }
+      ::-webkit-scrollbar-track { background: var(--paper-2); }
+
+      /* ========== MIND-BLOWING ANIMATIONS ========== */
+      /* 3D Perspective Container */
+      .perspective-container { perspective: 1000px; }
+      .preserve-3d { transform-style: preserve-3d; }
+
+      /* Animated Gradient Orbs */
+      @keyframes orb-float-1 {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(50px, -30px) scale(1.1); }
+        50% { transform: translate(20px, 20px) scale(0.95); }
+        75% { transform: translate(-30px, 10px) scale(1.05); }
+      }
+      @keyframes orb-float-2 {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(-40px, 30px) scale(1.15); }
+        66% { transform: translate(30px, -20px) scale(0.9); }
+      }
+      @keyframes orb-pulse {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.7; }
+      }
+      .orb-1 { animation: orb-float-1 20s ease-in-out infinite, orb-pulse 8s ease-in-out infinite; }
+      .orb-2 { animation: orb-float-2 25s ease-in-out infinite, orb-pulse 10s ease-in-out infinite reverse; }
+      .orb-3 { animation: orb-float-1 18s ease-in-out infinite reverse, orb-pulse 6s ease-in-out infinite; }
+
+      /* Particle Network Canvas */
+      #particle-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0.5;
+      }
+
+      /* Magnetic Button Effect */
+      .magnetic-btn {
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .magnetic-btn:hover {
+        transform: scale(1.05);
+      }
+
+      /* 3D Text Layers */
+      .text-3d-layer {
+        transition: transform 0.1s ease-out;
+        will-change: transform;
+      }
+
+      /* Glassmorphism Header */
+      .glass-header {
+        background: rgba(255, 253, 249, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(232, 224, 216, 0.5);
+      }
+      .glass-header.scrolled {
+        background: rgba(255, 253, 249, 0.95);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Count-up Animation */
+      @keyframes count-pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+      }
+      .count-animate { animation: count-pulse 0.3s ease-out; }
+
+      /* Card 3D Tilt */
+      .tilt-card {
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        transform-style: preserve-3d;
+      }
+      .tilt-card:hover {
+        transform: perspective(1000px) rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg)) translateZ(20px);
+      }
+
+      /* Spotlight Effect */
+      .spotlight {
+        position: relative;
+        overflow: hidden;
+      }
+      .spotlight::before {
+        content: '';
+        position: absolute;
+        top: var(--mouse-y, 50%);
+        left: var(--mouse-x, 50%);
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(238, 90, 43, 0.15) 0%, transparent 70%);
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .spotlight:hover::before { opacity: 1; }
+
+      /* Ripple Effect */
+      .ripple {
+        position: relative;
+        overflow: hidden;
+      }
+      .ripple::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease-out, height 0.6s ease-out;
+      }
+      .ripple:active::after {
+        width: 300px;
+        height: 300px;
+      }
+
+      /* Scroll Velocity Skew */
+      .velocity-skew {
+        transition: transform 0.15s ease-out;
+      }
+
+      /* Stagger Reveal */
+      @keyframes slide-up-fade {
+        from {
+          opacity: 0;
+          transform: translateY(40px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .stagger-reveal > * {
+        opacity: 0;
+        animation: slide-up-fade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      /* Shimmer Loading Effect */
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+      .shimmer {
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        background-size: 200% 100%;
+        animation: shimmer 2s infinite;
+      }
+
+      /* Hero Word Animation */
+      .hero-word {
+        display: inline-block;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.3s;
+      }
+      .hero-word:hover {
+        transform: translateY(-5px) scale(1.05);
+        text-shadow: 0 20px 40px rgba(238, 90, 43, 0.3);
+      }
+
+      /* Floating Elements */
+      @keyframes float-1 { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(3deg); } }
+      @keyframes float-2 { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(-2deg); } }
+      .float-1 { animation: float-1 6s ease-in-out infinite; }
+      .float-2 { animation: float-2 8s ease-in-out infinite; }
+
+      /* Glow Effects */
+      .glow-accent {
+        box-shadow: 0 0 20px rgba(238, 90, 43, 0.3), 0 0 40px rgba(238, 90, 43, 0.1);
+      }
+      .glow-accent:hover {
+        box-shadow: 0 0 30px rgba(238, 90, 43, 0.5), 0 0 60px rgba(238, 90, 43, 0.2);
+      }
+
+      /* Text Reveal Mask */
+      .text-reveal-mask {
+        overflow: hidden;
+      }
+      .text-reveal-mask > span {
+        display: inline-block;
+        transform: translateY(100%);
+        animation: text-reveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes text-reveal {
+        to { transform: translateY(0); }
+      }
+
+      /* ========== MOBILE OPTIMIZATIONS ========== */
+      @media (max-width: 640px) {
+        .font-display {
+          letter-spacing: -0.02em;
+        }
+        .hero-word {
+          letter-spacing: -0.02em;
+        }
+        /* Disable complex animations on mobile for performance */
+        .orb-1, .orb-2, .orb-3 {
+          animation-duration: 30s;
+          opacity: 0.3;
+        }
+        .tilt-card {
+          transform: none !important;
+        }
+      }
+
+      /* Touch device optimizations */
+      @media (hover: none) and (pointer: coarse) {
+        .hero-word:hover {
+          transform: none;
+          text-shadow: none;
+        }
+        .magnetic-btn:hover {
+          transform: none;
+        }
+        .tilt-card:hover {
+          transform: none;
+        }
+        .spotlight::before {
+          display: none;
+        }
+      }
+
+      /* Reduced motion preference */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+        .orb-1, .orb-2, .orb-3 {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const { useState, useEffect, useRef, useCallback, useMemo } = React;
+      const { motion, AnimatePresence, useScroll, useTransform } = window.Motion;
+
+      // Global Animation Presets
+      const SPRING = { type: "spring", stiffness: 100, damping: 20, mass: 1 };
+      const FADE_UP = {
+        initial: { y: 20, opacity: 0 },
+        whileInView: { y: 0, opacity: 1 },
+        viewport: { once: true, margin: "-100px" },
+        transition: { ...SPRING }
+      };
+      const STAGGER_CONTAINER = {
+        initial: {},
+        whileInView: { transition: { staggerChildren: 0.05 } },
+        viewport: { once: true, margin: "-100px" }
+      };
+
+      // =============================================================================
+      // TWEAKS PANEL UI
+      // =============================================================================
+      const __TWEAKS_STYLE = `
+        .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+          max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+          background:rgba(250,249,247,.78);color:#29261b;
+          -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+          border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+          box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+          font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+        .twk-hd{display:flex;align-items:center;justify-content:space-between;
+          padding:10px 8px 10px 14px;cursor:move;user-select:none}
+        .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+        .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+          width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+        .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+        .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+          overflow-y:auto;overflow-x:hidden;min-height:0;
+          scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+        .twk-body::-webkit-scrollbar{width:8px}
+        .twk-body::-webkit-scrollbar-track{background:transparent;margin:2px}
+        .twk-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;
+          border:2px solid transparent;background-clip:content-box}
+        .twk-body::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);
+          border:2px solid transparent;background-clip:content-box}
+        .twk-row{display:flex;flex-direction:column;gap:5px}
+        .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+        .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;
+          color:rgba(41,38,27,.72)}
+        .twk-lbl>span:first-child{font-weight:500}
+        .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+
+        .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+          color:rgba(41,38,27,.45);padding:10px 0 0}
+        .twk-sect:first-child{padding-top:0}
+
+        .twk-field{appearance:none;width:100%;height:26px;padding:0 8px;
+          border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+          background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+        .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+        select.twk-field{padding-right:22px;
+          background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
+          background-repeat:no-repeat;background-position:right 8px center}
+
+        .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+          border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+        .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+          width:14px;height:14px;border-radius:50%;background:#fff;
+          border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+        .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+          background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+
+        .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+          background:rgba(0,0,0,.06);user-select:none}
+        .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+          background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+          transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+        .twk-seg.dragging .twk-seg-thumb{transition:none}
+        .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+          background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+          border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;
+          overflow-wrap:anywhere}
+
+        .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+          background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+        .twk-toggle[data-on="1"]{background:#34c759}
+        .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+          background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+        .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+
+        .twk-num{display:flex;align-items:center;height:26px;padding:0 0 0 8px;
+          border:.5px solid rgba(0,0,0,.1);border-radius:7px;background:rgba(255,255,255,.6)}
+        .twk-num-lbl{font-weight:500;color:rgba(41,38,27,.6);cursor:ew-resize;
+          user-select:none;padding-right:8px}
+        .twk-num input{flex:1;min-width:0;height:100%;border:0;background:transparent;
+          font:inherit;font-variant-numeric:tabular-nums;text-align:right;padding:0 8px 0 0;
+          outline:none;color:inherit;-moz-appearance:textfield}
+        .twk-num input::-webkit-inner-spin-button,.twk-num input::-webkit-outer-spin-button{
+          -webkit-appearance:none;margin:0}
+        .twk-num-unit{padding-right:8px;color:rgba(41,38,27,.45)}
+
+        .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
+          background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
+        .twk-btn:hover{background:rgba(0,0,0,.88)}
+        .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
+        .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+
+        .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+          border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
+          background:transparent;flex-shrink:0}
+        .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
+        .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
+        .twk-swatch::-moz-color-swatch{border:0;border-radius:5.5px}
+      `;
+
+      function useTweaks(defaults) {
+        const [values, setValues] = React.useState(defaults);
+        const setTweak = React.useCallback((keyOrEdits, val) => {
+          const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null ? keyOrEdits : { [keyOrEdits]: val };
+          setValues((prev) => ({ ...prev, ...edits }));
+          window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+          if (edits.accent) document.documentElement.style.setProperty("--accent", edits.accent);
+          if (edits.accentSoft) document.documentElement.style.setProperty("--accent-soft", edits.accentSoft);
+        }, []);
+        return [values, setTweak];
+      }
+
+      function TweaksPanel({ title = 'Tweaks', children }) {
+        const [open, setOpen] = React.useState(false);
+        const dragRef = React.useRef(null);
+        const offsetRef = React.useRef({ x: 16, y: 16 });
+        const PAD = 16;
+        const clampToViewport = React.useCallback(() => {
+          const panel = dragRef.current;
+          if (!panel) return;
+          const w = panel.offsetWidth, h = panel.offsetHeight;
+          const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+          const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+          offsetRef.current = {
+            x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+            y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+          };
+          panel.style.right = offsetRef.current.x + 'px';
+          panel.style.bottom = offsetRef.current.y + 'px';
+        }, []);
+        React.useEffect(() => {
+          if (!open) return;
+          clampToViewport();
+          if (typeof ResizeObserver === 'undefined') {
+            window.addEventListener('resize', clampToViewport);
+            return () => window.removeEventListener('resize', clampToViewport);
+          }
+          const ro = new ResizeObserver(clampToViewport);
+          ro.observe(document.documentElement);
+          return () => ro.disconnect();
+        }, [open, clampToViewport]);
+        React.useEffect(() => {
+          const onMsg = (e) => {
+            const t = e?.data?.type;
+            if (t === '__activate_edit_mode') setOpen(true);
+            else if (t === '__deactivate_edit_mode') setOpen(false);
+          };
+          window.addEventListener('message', onMsg);
+          window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+          return () => window.removeEventListener('message', onMsg);
+        }, []);
+        const dismiss = () => {
+          setOpen(false);
+          window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+        };
+        const onDragStart = (e) => {
+          const panel = dragRef.current;
+          if (!panel) return;
+          const r = panel.getBoundingClientRect();
+          const sx = e.clientX, sy = e.clientY;
+          const startRight = window.innerWidth - r.right;
+          const startBottom = window.innerHeight - r.bottom;
+          const move = (ev) => {
+            offsetRef.current = {
+              x: startRight - (ev.clientX - sx),
+              y: startBottom - (ev.clientY - sy),
+            };
+            clampToViewport();
+          };
+          const up = () => {
+            window.removeEventListener('mousemove', move);
+            window.removeEventListener('mouseup', up);
+          };
+          window.addEventListener('mousemove', move);
+          window.addEventListener('mouseup', up);
+        };
+        if (!open) return null;
+        return (
+          <>
+            <style>{__TWEAKS_STYLE}</style>
+            <div ref={dragRef} className="twk-panel" data-noncommentable="" style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+              <div className="twk-hd" onMouseDown={onDragStart}>
+                <b>{title}</b>
+                <button className="twk-x" aria-label="Close tweaks" onMouseDown={(e) => e.stopPropagation()} onClick={dismiss}>✕</button>
+              </div>
+              <div className="twk-body">{children}</div>
+            </div>
+          </>
+        );
+      }
+
+      function TweakSection({ title, label, children }) {
+        return (
+          <>
+            <div className="twk-sect">{title || label}</div>
+            {children}
+          </>
+        );
+      }
+
+      function TweakRow({ label, value, children, inline = false }) {
+        return (
+          <div className={inline ? 'twk-row twk-row-h' : 'twk-row'}>
+            <div className="twk-lbl">
+              <span>{label}</span>
+              {value != null && <span className="twk-val">{value}</span>}
+            </div>
+            {children}
+          </div>
+        );
+      }
+
+      function TweakToggle({ label, value, onChange }) {
+        return (
+          <div className="twk-row twk-row-h">
+            <div className="twk-lbl"><span>{label}</span></div>
+            <button type="button" className="twk-toggle" data-on={value ? '1' : '0'} role="switch" aria-checked={!!value} onClick={() => onChange(!value)}><i /></button>
+          </div>
+        );
+      }
+
+      function TweakRadio({ label, value, options, onChange }) {
+        const trackRef = React.useRef(null);
+        const [dragging, setDragging] = React.useState(false);
+        const opts = options.map((o) => (typeof o === 'object' ? o : { value: o, label: o }));
+        const idx = Math.max(0, opts.findIndex((o) => o.value === value));
+        const n = opts.length;
+        const valueRef = React.useRef(value);
+        valueRef.current = value;
+        const segAt = (clientX) => {
+          const r = trackRef.current.getBoundingClientRect();
+          const inner = r.width - 4;
+          const i = Math.floor(((clientX - r.left - 2) / inner) * n);
+          return opts[Math.max(0, Math.min(n - 1, i))].value;
+        };
+        const onPointerDown = (e) => {
+          setDragging(true);
+          const v0 = segAt(e.clientX);
+          if (v0 !== valueRef.current) onChange(v0);
+          const move = (ev) => {
+            if (!trackRef.current) return;
+            const v = segAt(ev.clientX);
+            if (v !== valueRef.current) onChange(v);
+          };
+          const up = () => {
+            setDragging(false);
+            window.removeEventListener('pointermove', move);
+            window.removeEventListener('pointerup', up);
+          };
+          window.addEventListener('pointermove', move);
+          window.addEventListener('pointerup', up);
+        };
+        return (
+          <TweakRow label={label}>
+            <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown} className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
+              <div className="twk-seg-thumb" style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`, width: `calc((100% - 4px) / ${n})` }} />
+              {opts.map((o) => (
+                <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>{o.label}</button>
+              ))}
+            </div>
+          </TweakRow>
+        );
+      }
+
+      function TweakColor({ label, value, onChange }) {
+        return (
+          <div className="twk-row twk-row-h">
+            <div className="twk-lbl"><span>{label}</span></div>
+            <input type="color" className="twk-swatch" value={value} onChange={(e) => onChange(e.target.value)} />
+          </div>
+        );
+      }
+
+      // =============================================================================
+      // CONTENT & CONFIG
+      // =============================================================================
+      const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+        "accent": "#EE5A2B",
+        "accentSoft": "#FFE7DD",
+        "navy": "#1E3A5F",
+        "darkHero": false,
+        "density": "comfortable",
+        "showEngagement": true,
+        "showBlog": true,
+        "successLayout": "grid"
+      }/*EDITMODE-END*/;
+
+      const PHONE_RAW = "8801334916900";
+      const PHONE_DISPLAY = "+880 1334-916900";
+      const EMAIL = "info@eduflexglobal.com";
+      const ADDRESS_LINES = [
+        "Khairun Bhaban, Lift 04, 5th Floor",
+        "Mirboxtula, Nayasarak Road",
+        "Sylhet, Bangladesh",
+      ];
+
+      const DESTINATIONS = [
+        { name: "Canada",         code: "CAN", iata: "YYZ", flag: "🇨🇦", tag: "PGWP-friendly", blurb: "World-class universities, post-graduation work permit, and a clear path to PR.", color: "#dc2626", img: "assets/destinations/canada.png" },
+        { name: "United Kingdom", code: "UK",  iata: "LHR", flag: "🇬🇧", tag: "1-yr Masters", blurb: "Russell Group prestige with the fastest route to a Master's degree.", color: "#1e40af", img: "assets/destinations/uk.png" },
+        { name: "Australia",      code: "AUS", iata: "SYD", flag: "🇦🇺", tag: "Work + Study", blurb: "Up to 48 hours of work per fortnight and famously generous visas.", color: "#0e7490", img: "assets/destinations/australia.png" },
+        { name: "South Korea",    code: "KOR", iata: "ICN", flag: "🇰🇷", tag: "Scholarships", blurb: "K-LP pathway, top engineering schools, generous scholarship pools.", color: "#0f172a", img: "assets/destinations/korea.png" },
+        { name: "Malta",          code: "MLT", iata: "MLA", flag: "🇲🇹", tag: "EU gateway", blurb: "English-medium European education on a low-budget Mediterranean island.", color: "#b91c1c", img: "assets/destinations/malta.png" },
+        { name: "Cyprus",         code: "CYP", iata: "LCA", flag: "🇨🇾", tag: "Affordable EU", blurb: "Low tuition, sun-soaked study, gateway to European employment.", color: "#a16207", img: "assets/destinations/cyprus.png" },
+        { name: "Malaysia",       code: "MYS", iata: "KUL", flag: "🇲🇾", tag: "Asia hub", blurb: "Twinning programs, halal-friendly campuses, and one of Asia's lowest costs.", color: "#0f766e", img: "assets/destinations/malaysia.png" },
+      ];
+
+      const WHY_REASONS = [
+        { n: "01", title: "Country-specific guidance",     desc: "Tailored playbooks per destination — no generic advice.", icon: "compass" },
+        { n: "02", title: "Strong university connections", desc: "Direct relationships with admissions offices and partner schools.", icon: "link" },
+        { n: "03", title: "Career-oriented roadmaps",      desc: "We map your degree to outcomes — jobs, PR, and long-term ROI.", icon: "route" },
+        { n: "04", title: "Scholarship maximization",      desc: "Stack merit, need-based, and country-specific awards.", icon: "award" },
+        { n: "05", title: "Budget mapping",                desc: "Honest cost-of-living forecasts. No hidden surprises.", icon: "chart" },
+        { n: "06", title: "Low-score-friendly options",    desc: "Pathways for IELTS 5.5, 6.0, or no-IELTS routes.", icon: "ladder" },
+        { n: "07", title: "Documentation mastery",         desc: "We obsess over the paperwork so embassies don't bounce you.", icon: "doc" },
+        { n: "08", title: "Compliance-first approach",     desc: "Every application audited against the latest visa policy.", icon: "shield" },
+        { n: "09", title: "Embassy interview prep",        desc: "Mock interviews with feedback by destination, not generic.", icon: "mic" },
+        { n: "10", title: "Pre-departure support",         desc: "Forex, SIM, housing, packing — checklists that actually work.", icon: "plane" },
+        { n: "11", title: "Language training",             desc: "IELTS guidance and Basic Korean for K-LP applicants.", icon: "speak" },
+        { n: "12", title: "Post-arrival support",          desc: "We don't disappear at the airport. Settling-in help, end-to-end.", icon: "home" },
+      ];
+
+      const STEPS = [
+        { n: "01", title: "Initial Consultation", desc: "Free 30-minute call. We map your goals to the right destination, course, and budget." },
+        { n: "02", title: "Application Filing",   desc: "We draft, edit, and submit applications across multiple universities in parallel." },
+        { n: "03", title: "Visa Processing",      desc: "Documentation, financial proof, embassy paperwork — done by hand, audited twice." },
+        { n: "04", title: "Pre-Departure",        desc: "Flights, accommodation, forex, and a cultural briefing before you board." },
+      ];
+
+      const SUCCESS_STORIES = [
+        { name: "Hasan Ul Riaz Yashfy", country: "Australia",   university: "UniSC",              program: "Visa Approved", year: "2026", img: "assets/success/FB_IMG_1777878446946.jpg" },
+        { name: "Asadur Rahman",        country: "Australia",   university: "Box Hill Institute", program: "Visa Approved", year: "2026", img: "assets/success/IMG-20260504-WA0034.jpg" },
+        { name: "Khalilur Rahman",      country: "Australia",   university: "UniSC",              program: "Visa Approved", year: "2026", img: "assets/success/IMG-20260504-WA0035.jpg" },
+        { name: "Md. Maruf Hasan",      country: "South Korea", university: "Mokwon University",  program: "Visa Approved", year: "2026", img: "assets/success/IMG-20260504-WA0036.jpg" },
+        { name: "Hossain MD Azim",      country: "South Korea", university: "Konkuk University",  program: "Visa Approved", year: "2026", img: "assets/success/IMG-20260504-WA0037.jpg" },
+        { name: "MD Shojib Ahmed",      country: "South Korea", university: "Mokwon University",  program: "Visa Approved", year: "2026", img: "assets/success/IMG-20260504-WA0038.jpg" },
+        { name: "MD Marjan Ahmed Raza", country: "South Korea", university: "Mokwon University",  program: "Visa Approved", year: "2026", img: "assets/success/IMG-20260504-WA0039.jpg" },
+        { name: "Mamun Ahmed",          country: "South Korea", university: "Mokwon University",  program: "Visa Approved", year: "2026", img: "assets/success/IMG-20260504-WA0040.jpg" },
+        { name: "Raskin Kabir Rifat",   country: "South Korea", university: "Kyunsung University",program: "Visa Approved", year: "2026", img: "assets/success/IMG-20260504-WA0041.jpg" },
+        { name: "Arman Hossin",         country: "South Korea", university: "Kyunsung University",program: "Visa Approved", year: "2026", img: "assets/success/IMG-20260504-WA0042.jpg" },
+        { name: "MD Emon Mia",          country: "South Korea", university: "Mokwon University",  program: "Visa Approved", year: "2026", img: "assets/success/IMG_7252.JPG" },
+      ];
+
+      const FOUNDERS = [
+        {
+          name: "Amdadur Rahman",
+          role: "Founder & Director",
+          img: "public/founder.jpg",
+          pullQuote: "No student's potential should be limited by their geography. That's the whole point of EduFlex.",
+          bio: "Amdadur Rahman built EduFlex Global on a simple conviction: that ambitious students from Sylhet — and from across Bangladesh — deserve the same caliber of advice, care, and university access as students sitting in Seoul, Sydney, or Toronto. Having lived and studied across borders himself, he founded EduFlex to be the consultancy he wished he'd had."
+        },
+        {
+          name: "Musaddek Hussain",
+          role: "Co-Founder",
+          img: "public/IMG-20260504-WA0002.jpg",
+          pullQuote: "We navigate the complexities of European university admissions so you don't have to.",
+          bio: "Co-founder driving partnerships with universities across the UK and Europe. Musaddek's meticulous approach to policy ensures that every application is bulletproof, providing students with seamless entry into elite programs."
+        },
+        {
+          name: "Shah Alam Chowdhury (Sam)",
+          role: "Co-Founder",
+          img: "public/IMG-20260504-WA0003.jpg",
+          pullQuote: "A successful visa is not luck; it is strategy, precision, and relentless advocacy.",
+          bio: "Co-founder. Heads the Australia and Malaysia desks with a focus on long-term student outcomes, carefully mapping degrees to post-graduation work opportunities to ensure maximum return on investment for families."
+        },
+        {
+          name: "Layek Ahmed",
+          role: "Co-Founder",
+          img: "public/IMG-20260504-WA0004.jpg",
+          pullQuote: "We manage the timelines so you can focus on the journey ahead.",
+          bio: "Co-founder. Brings the operational rigour that keeps every file moving on time. Layek is the invisible hand ensuring that deadlines are met without fail, giving our students the peace of mind they deserve."
+        }
+      ];
+
+      const TEAM = [
+        { name: "MD Sajidur Rahman",    role: "Country Manager — South Korea",  bio: "Leads the South Korea desk: K-LP applications, TOPIK preparation, and university placement.", img: "uploads/IMG-20260504-WA0010.jpg" },
+        { name: "MD Shalah Uddin Haque",role: "Operations Manager",             bio: "Keeps the office running and every application file audit-ready.", img: "uploads/IMG-20260504-WA0005.jpg" },
+        { name: "Maliha Iman",          role: "Compliance & Admission Officer",  bio: "Owns documentation accuracy and ensures every application meets the latest visa policy.", img: "uploads/IMG-20260504-WA0009.jpg" },
+        { name: "Motachim Billah",      role: "Educational Consultant",         bio: "Guides students from first call to first day on campus across multiple destinations.", img: "assets/team/motachim.jpg" },
+        { name: "Srabony Noor",         role: "Educational Consultant",         bio: "Career-first counselling, with a focus on programme fit and long-term ROI.", img: "assets/team/srabony.jpg" },
+        { name: "Sharif Ahmed",         role: "Office Administrator",           bio: "First friendly face you meet at our Sylhet office. Coordinates appointments, files, and logistics.", img: "assets/team/sharif.jpg" },
+        { name: "Raisa Afrin",          role: "Front Desk Executive",           bio: "Welcomes every visitor and routes inquiries to the right counsellor on the team.", img: "assets/team/raisa.jpg" },
+        { name: "Aysha Humayra",        role: "HR",                             bio: "Looks after the people who look after our students.", img: "" },
+        { name: "Asadur Rahman",        role: "Office Coordinator",             bio: "Coordinates day-to-day operations across counsellors, students, and partners.", img: "" },
+      ];
+
+      const ENGAGEMENT_PHOTOS = [
+        { caption: "Speakers Hunt 4.0 — EduFlex booth",     tag: "Sponsorship", img: "assets/events/booth-speakers-hunt.jpg",       w: 2 },
+        { caption: "Korean delegation welcomed to Sylhet",  tag: "Partner",     img: "assets/events/welcome-sylhet.jpg",            w: 1 },
+        { caption: "South Korea admission seminar",         tag: "Seminar",     img: "assets/events/korea-seminar.jpg",             w: 1 },
+        { caption: "Speakers Hunt 4.0 — Grand Finale Awards", tag: "Event",     img: "assets/events/speakers-hunt-awards.jpg",      w: 2 },
+        { caption: "Campus registration day",               tag: "Outreach",    img: "assets/events/campus-registration.jpg",       w: 1 },
+        { caption: "Mokwon University partnership group",   tag: "Partner",     img: "assets/events/korea-group.jpg",               w: 1 },
+        { caption: "Outdoor education fair",                tag: "Fair",        img: "assets/events/outdoor-fair.jpg",              w: 1 },
+        { caption: "In-office partner reception",           tag: "Community",   img: "assets/events/office-delegation.jpg",         w: 2 },
+        { caption: "EduFlex info session",                  tag: "Workshop",    img: "assets/events/seminar-table-of-contents.jpg", w: 1 },
+      ];
+
+      const BLOG_POSTS = [
+        { title: "South Korea K-LP visa: a 2025 walkthrough",           tag: "Visa Guide", date: "Apr 18, 2026", read: "8 min", img: "assets/events/korea-seminar.jpg" },
+        { title: "How we got 14 students into Canadian PGWP programs",  tag: "Case Study", date: "Apr 02, 2026", read: "6 min", img: "assets/events/campus-registration.jpg" },
+        { title: "IELTS 6.0? Here are the universities that will say yes", tag: "Strategy", date: "Mar 21, 2026", read: "5 min", img: "assets/events/booth-speakers-hunt.jpg" },
+        { title: "Malta vs Cyprus: the honest cost comparison",         tag: "Compare",    date: "Mar 09, 2026", read: "7 min", img: "assets/events/outdoor-fair.jpg" },
+      ];
+
+      // =============================================================================
+      // SHARED PRIMITIVES
+      // =============================================================================
+      const waLink = (msg = "Hi EduFlex Global, I'd like a quick consultation.") =>
+        `https://wa.me/${PHONE_RAW}?text=${encodeURIComponent(msg)}`;
+
+      const Eyebrow = ({ children, className = "" }) => (
+        <span className={`accent-text font-mono text-[10px] uppercase font-black tracking-mega ${className}`}>{children}</span>
+      );
+
+      const Rule = ({ className = "" }) => (
+        <motion.div 
+          initial={{ width: 0 }}
+          whileInView={{ width: 48 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className={`h-px accent-bg ${className}`} 
+        />
+      );
+
+      const SectionHead = ({ eyebrow, title, lede, alt, children }) => (
+        <div className={`flex flex-col lg:flex-row lg:items-end justify-between gap-6 md:gap-10 mb-10 md:mb-16`}>
+          <div className="max-w-3xl">
+            <div className="flex items-center gap-4 mb-6"><Eyebrow>{eyebrow}</Eyebrow><Rule /></div>
+            <h2 className="font-display text-5xl md:text-7xl xl:text-8xl leading-[0.85]">
+              {title.map((part, i) => (
+                <span key={i} className={part.alt ? "not-italic font-light text-zinc-400" : ""}>{part.text}{i < title.length - 1 ? " " : ""}</span>
+              ))}
+            </h2>
+          </div>
+          {lede && <p className="max-w-md text-zinc-600 text-base leading-relaxed">{lede}</p>}
+          {children}
+        </div>
+      );
+
+      const Btn = ({ children, primary, href, target, onClick, className = "", icon }) => {
+        const Tag = href ? "a" : "button";
+        return (
+          <Tag href={href} target={target} rel={target ? "noopener noreferrer" : undefined} onClick={onClick}
+            className={`inline-flex items-center justify-center gap-3 text-[11px] font-black uppercase tracking-widest px-7 py-4 rounded-sm transition-all
+              ${primary ? "text-white shadow-xl hover:scale-[1.02] active:scale-100" : "border rule-border hover:bg-zinc-50"}
+              ${className}`}
+            style={primary ? { background: "var(--ink)" } : undefined}>
+            {children}
+            {icon}
+          </Tag>
+        );
+      };
+
+      const Icon = ({ name, size = 18, className = "" }) => {
+        const paths = {
+          arrow:   "M5 12h14M13 6l6 6-6 6", arrowUR: "M7 17L17 7M8 7h9v9", plane:   "M16 4l-4 16M2 9l20-5-5 20-5-9-10-6z",
+          shield:  "M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6l8-3z", globe:   "M12 3a9 9 0 100 18 9 9 0 000-18zM3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18",
+          check:   "M5 12l5 5L20 7", phone:   "M22 16v3a2 2 0 01-2 2A19 19 0 013 5a2 2 0 012-2h3l2 5-3 2a14 14 0 006 6l2-3 5 2z",
+          mail:    "M3 7l9 6 9-6M3 7v10h18V7M3 7l18 0", pin:     "M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13zM12 11a2 2 0 100-4 2 2 0 000 4z",
+          chat:    "M21 12a8 8 0 01-11.6 7.1L4 21l1.9-5.4A8 8 0 1121 12z", play:    "M6 4l14 8-14 8V4z", cap:     "M3 9l9-5 9 5-9 5-9-5zm0 5v3l9 5 9-5v-3",
+          compass: "M12 2a10 10 0 100 20 10 10 0 000-20zm3 7l-2 5-5 2 2-5 5-2z", link:    "M10 14a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1M14 10a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1",
+          route:   "M5 6a2 2 0 11-4 0 2 2 0 014 0zM23 18a2 2 0 11-4 0 2 2 0 014 0zM3 6h6a4 4 0 014 4v4a4 4 0 004 4h4",
+          award:   "M8 21l4-3 4 3V12H8v9zM12 3a5 5 0 100 10 5 5 0 000-10z", chart:   "M3 21V5M3 21h18M7 16v-5M11 16V8M15 16v-3M19 16V6",
+          ladder:  "M6 3v18M18 3v18M6 7h12M6 12h12M6 17h12", doc:     "M7 3h7l5 5v13H7zM14 3v5h5",
+          mic:     "M12 2a3 3 0 00-3 3v6a3 3 0 006 0V5a3 3 0 00-3-3zM5 11a7 7 0 0014 0M12 18v4", speak:   "M3 8h7v8H6l-3 3V8zM21 6h-7v8h4l3 3V6z",
+          home:    "M3 11l9-8 9 8v10H3V11zM10 21v-6h4v6", fb:      "M14 8h3V5h-3a4 4 0 00-4 4v2H7v3h3v8h3v-8h3l1-3h-4V9a1 1 0 011-1z",
+          ig:      "M3 7a4 4 0 014-4h10a4 4 0 014 4v10a4 4 0 01-4 4H7a4 4 0 01-4-4V7zM12 8a4 4 0 100 8 4 4 0 000-8zM18 6.5h.01",
+          tt:      "M14 4v9a4 4 0 11-4-4M14 4c0 3 2 5 5 5", yt:      "M3 8a4 4 0 014-4h10a4 4 0 014 4v8a4 4 0 01-4 4H7a4 4 0 01-4-4V8zM10 9l6 3-6 3V9z",
+          li:      "M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 6a2 2 0 100-4 2 2 0 000 4z",
+          menu:    "M4 6h16M4 12h16M4 18h16", x:       "M6 6l12 12M18 6L6 18", quote:   "M4 17V9a3 3 0 013-3M14 17V9a3 3 0 013-3",
+          whatsapp: "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.414 0 .018 5.396.015 12.03a11.934 11.934 0 001.608 6.044L0 24l6.117-1.605a11.882 11.882 0 005.925 1.586h.005c6.635 0 12.033-5.396 12.036-12.031a11.856 11.856 0 00-3.528-8.503z"
+        };
+        return (
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={className}>
+            <path d={paths[name] || paths.check} />
+          </svg>
+        );
+      };
+
+      const Logo = () => (
+        <a href="#top" className="flex items-center gap-3 group">
+          <img src="assets/logo.png" alt="EduFlex Global" className="h-12 w-auto" />
+        </a>
+      );
+
+      // =============================================================================
+      // SECTIONS
+      // =============================================================================
+      function Navbar() {
+        const [open, setOpen] = useState(false);
+        const [scrolled, setScrolled] = useState(false);
+        useEffect(() => {
+          const onScroll = () => setScrolled(window.scrollY > 24);
+          window.addEventListener("scroll", onScroll); onScroll();
+          return () => window.removeEventListener("scroll", onScroll);
+        }, []);
+        const links = [
+          ["Destinations", "#destinations"], ["Why EduFlex", "#why"], ["Process", "#process"],
+          ["Stories", "#stories"], ["Founders", "#founder"], ["Team", "#team"],
+          ["Blog", "#blog"], ["Contact", "#contact"],
+        ];
+        return (
+          <nav className={`fixed top-0 inset-x-0 z-50 h-20 flex items-center transition-all duration-500 ${scrolled ? "glass-header" : "bg-transparent"}`}>
+            <div className="w-full px-6 md:px-10 flex items-center justify-between">
+              <Logo />
+              <div className="hidden lg:flex items-center gap-8">
+                {links.map(([label, href]) => (
+                  <a key={href} href={href} className="text-[11px] font-bold uppercase tracking-widest text-zinc-800 hover:accent-text transition-colors">{label}</a>
+                ))}
+                <span className="h-4 w-px bg-zinc-200" />
+                <a href={`tel:${PHONE_RAW}`} className="flex items-center gap-2 text-zinc-900 font-bold text-sm">
+                  <Icon name="phone" size={15} className="accent-text" /> {PHONE_DISPLAY}
+                </a>
+                <Btn primary href={waLink()} target="_blank" icon={<Icon name="arrow" size={14} />}>Free Consultation</Btn>
+              </div>
+              <button className="lg:hidden p-4" onClick={() => setOpen(!open)}>
+                <Icon name={open ? "x" : "menu"} size={22} />
+              </button>
+            </div>
+            <AnimatePresence>
+              {open && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="absolute top-20 inset-x-0 bg-white border-b rule-border px-6 py-4 lg:hidden flex flex-col gap-5 shadow-xl overflow-hidden"
+                >
+                  {links.map(([label, href]) => (
+                    <a key={href} href={href} onClick={() => setOpen(false)} className="text-xs font-black tracking-widest uppercase text-zinc-600 py-2">{label}</a>
+                  ))}
+                  <Btn primary href={waLink()} target="_blank" className="mt-2 mb-2">Free Consultation</Btn>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </nav>
+        );
+      }
+
+      function Hero({ dark }) {
+        const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+        const containerRef = useRef(null);
+        const [stats, setStats] = useState([
+          { label: "Visa Success", val: 0, target: 98, suffix: "%" },
+          { label: "Students Placed", val: 0, target: 1000, suffix: "+" },
+          { label: "Partner Universities", val: 0, target: 250, suffix: "+" },
+          { label: "Destinations", val: 0, target: 7, suffix: "" },
+        ]);
+
+        // Mouse parallax effect
+        useEffect(() => {
+          const handleMouseMove = (e) => {
+            if (!containerRef.current) return;
+            const rect = containerRef.current.getBoundingClientRect();
+            const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
+            const y = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
+            setMousePos({ x: x * 20, y: y * 20 });
+          };
+          window.addEventListener("mousemove", handleMouseMove, { passive: true });
+          return () => window.removeEventListener("mousemove", handleMouseMove);
+        }, []);
+
+        // Count-up animation
+        useEffect(() => {
+          const duration = 2000;
+          const startTime = Date.now();
+          const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            setStats(prev => prev.map(s => ({
+              ...s,
+              val: Math.floor(s.target * easeOut)
+            })));
+            if (progress < 1) requestAnimationFrame(animate);
+          };
+          const timer = setTimeout(animate, 1500);
+          return () => clearTimeout(timer);
+        }, []);
+
+        // Two-line hero structure for maximum impact
+        const line1 = ["Your", "compass"];
+        const line2 = ["to a", "global", "degree."];
+        const line1Depths = [20, 30];
+        const line2Depths = [15, 40, 25];
+
+        return (
+          <section ref={containerRef} id="top" className={`relative min-h-screen pt-20 sm:pt-28 overflow-hidden grain perspective-container ${dark ? "hero-dark" : "bg-white"}`}>
+            {/* Animated Gradient Orbs */}
+            <div className="absolute inset-0 -z-10 overflow-hidden">
+              <div className="orb-1 absolute -top-20 -right-20 w-[40rem] h-[40rem] rounded-full blur-[100px]" style={{ background: "var(--accent-soft)" }} />
+              <div className="orb-2 absolute top-1/2 -left-32 w-[30rem] h-[30rem] rounded-full blur-[80px] opacity-60" style={{ background: "#FFE4D1" }} />
+              <div className="orb-3 absolute bottom-0 right-1/4 w-[25rem] h-[25rem] rounded-full blur-[60px] opacity-50" style={{ background: "#FFF0E6" }} />
+            </div>
+
+            <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 xl:px-20 py-8 sm:py-20 preserve-3d">
+              <div className="flex items-center gap-4 mb-10">
+                <motion.div 
+                  initial={{ opacity: 0, x: -10 }} 
+                  animate={{ opacity: 1, x: 0 }} 
+                  transition={{ delay: 0.2 }}
+                  style={{ transform: `translate3d(${mousePos.x * 0.1}px, ${mousePos.y * 0.1}px, 0)` }}
+                >
+                  <Eyebrow>EduFlex Global // Sylhet, Bangladesh</Eyebrow>
+                </motion.div>
+                <motion.div 
+                  initial={{ scaleX: 0 }} 
+                  animate={{ scaleX: 1 }} 
+                  transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ transformOrigin: "left" }}
+                >
+                  <Rule />
+                </motion.div>
+              </div>
+
+              {/* 3D Hero Text - 2 Lines Full Screen */}
+              <div className="min-h-[50vh] md:min-h-[60vh] flex flex-col justify-center mb-8">
+                {/* Line 1 */}
+                <div className="overflow-visible mb-2 md:mb-4">
+                  <h1 className="font-display text-[12vw] sm:text-[11vw] md:text-[10vw] lg:text-[9vw] xl:text-[8vw] leading-[1.1] tracking-normal preserve-3d">
+                    {line1.map((word, i) => (
+                      <span
+                        key={`l1-${i}`}
+                        className="inline-block overflow-visible mr-[0.15em] last:mr-0 py-2"
+                        style={{
+                          transform: `translate3d(${mousePos.x * (line1Depths[i] / 30)}px, ${mousePos.y * (line1Depths[i] / 30)}px, ${line1Depths[i]}px)`,
+                          transition: "transform 0.1s ease-out"
+                        }}
+                      >
+                        <motion.span
+                          initial={{ y: "100%", opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.3 + (i * 0.1), duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                          className="hero-word inline-block text-ink"
+                          whileHover={{ scale: 1.02 }}
+                        >
+                          {word}
+                        </motion.span>
+                      </span>
+                    ))}
+                  </h1>
+                </div>
+
+                {/* Line 2 */}
+                <div className="overflow-visible">
+                  <h1 className="font-display text-[12vw] sm:text-[11vw] md:text-[10vw] lg:text-[9vw] xl:text-[8vw] leading-[1.1] tracking-normal preserve-3d">
+                    {line2.map((word, i) => (
+                      <span
+                        key={`l2-${i}`}
+                        className="inline-block overflow-visible mr-[0.15em] last:mr-0 py-2"
+                        style={{
+                          transform: `translate3d(${mousePos.x * (line2Depths[i] / 30)}px, ${mousePos.y * (line2Depths[i] / 30)}px, ${line2Depths[i]}px)`,
+                          transition: "transform 0.1s ease-out"
+                        }}
+                      >
+                        <motion.span
+                          initial={{ y: "100%", opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.5 + (i * 0.08), duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                          className={`hero-word inline-block ${word.includes("global") || word.includes("degree") ? "accent-text" : "text-ink"}`}
+                          whileHover={{ scale: 1.02 }}
+                        >
+                          {word}
+                        </motion.span>
+                      </span>
+                    ))}
+                  </h1>
+                </div>
+              </div>
+
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-12">
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1, duration: 0.8 }}
+                  className="max-w-xl text-zinc-500 text-lg md:text-xl leading-relaxed"
+                  style={{ transform: `translate3d(${mousePos.x * 0.05}px, ${mousePos.y * 0.05}px, 0)` }}
+                >
+                  EduFlex Global is a premium student consultancy. We don't just process visas;
+                  we architect international careers with 100% transparency.
+                </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 1.2, ...SPRING }}
+                  className="flex flex-wrap gap-4"
+                  style={{ transform: `translate3d(${mousePos.x * 0.15}px, ${mousePos.y * 0.15}px, 30px)` }}
+                >
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+                    <Btn primary href={waLink()} target="_blank" className="magnetic-btn ripple glow-accent">
+                      WhatsApp a Counsellor
+                      <motion.span animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+                        <Icon name="arrow" size={14} className="ml-2" />
+                      </motion.span>
+                    </Btn>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+                    <Btn href="#destinations" className="magnetic-btn">Explore Destinations</Btn>
+                  </motion.div>
+                </motion.div>
+              </div>
+
+              {/* Animated Stats with Count-up */}
+              <motion.div
+                variants={STAGGER_CONTAINER}
+                initial="initial"
+                whileInView="whileInView"
+                viewport={{ once: true }}
+                className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-10 sm:mt-24 pt-6 sm:pt-12 border-t rule-border"
+              >
+                {stats.map((stat, i) => (
+                  <motion.div 
+                    key={i} 
+                    variants={FADE_UP} 
+                    className="flex flex-col spotlight"
+                    whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+                  >
+                    <motion.span 
+                      className="font-display text-4xl accent-text mb-1"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 1.5 + i * 0.1, ...SPRING }}
+                    >
+                      {stat.val}{stat.suffix}
+                    </motion.span>
+                    <span className="font-mono text-[9px] uppercase tracking-widest font-black text-zinc-400">{stat.label}</span>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
+          </section>
+        );
+      }
+
+
+
+      function Destinations() {
+        const [active, setActive] = useState(DESTINATIONS[0].code);
+        const cur = DESTINATIONS.find(d => d.code === active);
+        return (
+          <section id="destinations" className="py-12 md:py-24 px-6 md:px-12 border-b rule-border bg-white">
+            <SectionHead
+              eyebrow="07 Countries · Authentic Visas"
+              title={[{ text: "Pick your" }, { text: "destination.", alt: true }]}
+              lede="Country-specific guidance, real partner relationships, and pathways tuned to your budget and IELTS score." />
+
+            <div className="grid lg:grid-cols-12 gap-px bg-zinc-200 border rule-border">
+              <div className="lg:col-span-4 bg-white overflow-y-auto max-h-96 lg:max-h-none">
+                {DESTINATIONS.map((d) => (
+                  <button key={d.code} onClick={() => setActive(d.code)}
+                    className={`w-full text-left px-4 py-4 md:px-8 md:py-6 flex items-center justify-between border-b rule-border last:border-b-0 transition-all group ${active === d.code ? "bg-zinc-900 text-white" : "hover:bg-zinc-50"}`}>
+                    <div className="flex items-center gap-5">
+                      <span className="text-2xl">{d.flag}</span>
+                      <div>
+                        <div className="font-display text-2xl tracking-tighter leading-none">{d.name}</div>
+                        <div className={`font-mono text-[10px] uppercase tracking-widest mt-2 ${active === d.code ? "text-zinc-500" : "text-zinc-400"}`}>{d.tag}</div>
+                      </div>
+                    </div>
+                    <Icon name="arrow" size={18} className={active === d.code ? "accent-text" : "text-zinc-300 group-hover:accent-text"} />
+                  </button>
+                ))}
+              </div>
+              <div className="lg:col-span-8 bg-zinc-900 text-white relative min-h-[480px] overflow-hidden">
+                <AnimatePresence mode="wait">
+                  {cur.img ? (
+                    <motion.img 
+                      key={cur.img}
+                      initial={{ opacity: 0, scale: 1.05 }}
+                      animate={{ opacity: 0.7, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.6 }}
+                      src={cur.img} 
+                      alt={cur.name} 
+                      referrerPolicy="no-referrer" 
+                      className="absolute inset-0 w-full h-full object-cover" 
+                    />
+                  ) : null}
+                </AnimatePresence>
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+                <AnimatePresence mode="wait">
+                  <motion.div 
+                    key={cur.iata}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.2 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute top-8 right-8 font-mono text-7xl font-black"
+                  >
+                    {cur.iata}
+                  </motion.div>
+                </AnimatePresence>
+                <div className="absolute bottom-0 inset-x-0 p-8 md:p-12">
+                  <AnimatePresence mode="wait">
+                    <motion.div 
+                      key={cur.code}
+                      initial="hidden"
+                      animate="visible"
+                      exit="hidden"
+                      variants={{ visible: { transition: { staggerChildren: 0.1 } }, hidden: { opacity: 0 } }}
+                    >
+                      <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="flex items-center gap-4 mb-4 accent-text"><div className="h-px w-10 accent-bg" /><span className="font-mono text-[10px] uppercase tracking-mega font-black">{cur.tag}</span></motion.div>
+                      <motion.h3 variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="font-display text-5xl md:text-7xl mb-6 leading-none">{cur.name}</motion.h3>
+                      <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="max-w-xl text-zinc-300 text-lg leading-relaxed mb-8">{cur.blurb}</motion.p>
+                      <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="flex flex-wrap gap-3">
+                        <Btn href={waLink(`Hi! I'm interested in studying in ${cur.name}.`)} target="_blank" primary className="!bg-white !text-zinc-900 hover:!bg-zinc-100">Ask about {cur.name}</Btn>
+                        <Btn href="#process" className="border-white/20 text-white hover:bg-white/10">View Process</Btn>
+                      </motion.div>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function Why() {
+        return (
+          <section id="why" className="py-12 md:py-24 px-6 md:px-12 bg-zinc-50 border-b rule-border">
+            <SectionHead
+              eyebrow="Why EduFlex Global"
+              title={[{ text: "Twelve reasons" }, { text: "to choose us.", alt: true }]}
+              lede="A boutique consultancy ought to feel like one. Here's what we do that the application factories don't." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-zinc-200 border rule-border">
+              {WHY_REASONS.map((r, i) => (
+                <motion.div 
+                  key={r.n}
+                  variants={FADE_UP}
+                  initial="initial"
+                  whileInView="whileInView"
+                  whileHover={{ y: -8, backgroundColor: "var(--paper-2)", zIndex: 10 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ delay: (i % 4) * 0.05, ...SPRING }}
+                  className="bg-white p-6 md:p-10 group transition-colors duration-500 relative"
+                >
+                  <div className="flex items-start justify-between mb-8">
+                    <div className="w-12 h-12 accent-soft-bg flex items-center justify-center rounded-sm group-hover:accent-bg transition-colors duration-500">
+                      <Icon name={r.icon} size={20} className="accent-text group-hover:text-white transition-colors duration-500" />
+                    </div>
+                    <span className="font-mono text-[10px] font-black text-zinc-300 group-hover:accent-text transition-colors duration-500">{r.n}</span>
+                  </div>
+                  <h3 className="font-display text-2xl mb-4 group-hover:accent-text transition-colors duration-500">{r.title}</h3>
+                  <p className="text-zinc-500 text-sm leading-relaxed">{r.desc}</p>
+                  <div className="absolute bottom-0 left-0 h-1 w-0 accent-bg transition-all duration-700 group-hover:w-full" />
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        );
+      }
+
+      function Process() {
+        return (
+          <section id="process" className="py-12 md:py-24 px-6 md:px-12 bg-white border-b rule-border">
+            <SectionHead
+              eyebrow="Four simple steps"
+              title={[{ text: "How it" }, { text: "works.", alt: true }]}
+              lede="A streamlined path from first conversation to landing in your new country." />
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-200 border rule-border">
+              {STEPS.map((s, i) => (
+                <motion.div 
+                  key={s.n} 
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.08)" }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-white p-6 md:p-10 group relative overflow-hidden cursor-default"
+                >
+                  <div className="font-mono font-black text-zinc-100 group-hover:accent-text transition-colors absolute top-6 right-6 text-7xl leading-none">{s.n}</div>
+                  <div className="w-12 h-12 border accent-border accent-text flex items-center justify-center mb-12 relative z-10">
+                    <Icon name={i === 0 ? "compass" : i === 1 ? "doc" : i === 2 ? "shield" : "plane"} size={22} />
+                  </div>
+                  <h3 className="font-black uppercase tracking-tight text-lg mb-4 relative z-10">{s.title}</h3>
+                  <p className="text-zinc-500 text-sm leading-relaxed relative z-10">{s.desc}</p>
+                  <div className="absolute bottom-0 left-0 h-0.5 w-0 accent-bg group-hover:w-full transition-all duration-500" />
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        );
+      }
+
+      function Stories({ layout }) {
+        return (
+          <section id="stories" className="border-b rule-border bg-white">
+            <div className="px-6 md:px-12 py-12 md:py-20 border-b rule-border">
+              <SectionHead
+                eyebrow="Visa success stories"
+                title={[{ text: "Real students." }, { text: "real visas.", alt: true }]}
+                lede="Eight stories from this year alone. Our wall is small on purpose — every name is a person we walked through, end to end." />
+            </div>
+            {layout === "wall" ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-zinc-200">
+                {SUCCESS_STORIES.map((s, i) => (
+                  <motion.div 
+                    key={i} 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ delay: (i % 4) * 0.1, duration: 0.5 }}
+                    className={`relative bg-zinc-900 overflow-hidden group ${i % 5 === 0 ? "md:col-span-2 md:row-span-2 aspect-square" : "aspect-[4/5]"}`}
+                  >
+                    <img src={s.img} alt={s.name} referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-transparent to-transparent" />
+                    <div className="absolute top-5 right-5 px-2.5 py-1 bg-white/90 backdrop-blur font-mono text-[9px] font-black uppercase tracking-widest text-zinc-900">{s.program}</div>
+                    <div className="absolute bottom-0 inset-x-0 p-6">
+                      <span className="accent-text font-mono text-[10px] uppercase tracking-widest font-black">{s.country} · {s.year}</span>
+                      <h4 className="text-white font-black uppercase text-xl tracking-tight mt-1">{s.name}</h4>
+                      <p className="text-zinc-300 text-xs">{s.university}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6 px-6 md:px-12 py-10 bg-zinc-50/50">
+                {SUCCESS_STORIES.map((s, i) => (
+                  <motion.div 
+                    key={i} 
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ delay: (i % 4) * 0.1, duration: 0.5 }}
+                    whileHover={{ y: -5, scale: 1.01 }}
+                    className="bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden break-inside-avoid border rule-border"
+                  >
+                    <div className="w-full overflow-hidden bg-zinc-100 relative group">
+                      <img src={s.img} alt={s.name} referrerPolicy="no-referrer" className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
+                    </div>
+                    <div className="p-6 md:p-8">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="accent-text font-mono text-[10px] uppercase tracking-widest font-black">{s.country}</span>
+                        <span className="text-zinc-300">·</span>
+                        <span className="text-zinc-500 font-mono text-[10px] uppercase tracking-widest font-bold">{s.year}</span>
+                      </div>
+                      <h4 className="font-display font-bold text-2xl tracking-tight leading-tight text-ink">{s.name}</h4>
+                      <p className="text-zinc-600 text-sm mt-2">{s.university}</p>
+                      
+                      {/* Optional Program Badge */}
+                      <div className="mt-6 pt-6 border-t rule-border flex items-center justify-between">
+                         <span className="text-xs font-medium text-zinc-600 uppercase tracking-wider">{s.program}</span>
+                         <span className="text-2xl">{DESTINATIONS.find(d => d.name === s.country)?.flag}</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+            <div className="px-6 md:px-12 py-10 flex flex-wrap items-center justify-between gap-4">
+              <p className="text-zinc-500 text-sm">More stories — including video testimonials — added weekly.</p>
+              <Btn href={waLink("I'd like to hear more student stories.")} target="_blank" primary icon={<Icon name="arrow" size={14} />}>Talk to a recent grad</Btn>
+            </div>
+          </section>
+        );
+      }
+
+      function Founder() {
+        return (
+          <section id="founder" className="py-24 px-6 md:px-12 bg-white border-b rule-border relative overflow-hidden perspective-container">
+            <div aria-hidden className="absolute -top-40 -right-40 w-[32rem] h-[32rem] rounded-full blur-[120px] opacity-30 orb-1" style={{ background: "var(--accent-soft)" }} />
+            <div aria-hidden className="absolute bottom-20 -left-20 w-[24rem] h-[24rem] rounded-full blur-[100px] opacity-20 orb-2" style={{ background: "var(--accent)" }} />
+            <div className="relative z-10 max-w-7xl mx-auto">
+              <div className="flex items-center gap-4 mb-6"><Eyebrow>Meet the founders</Eyebrow><Rule /></div>
+              <h2 className="font-display text-4xl sm:text-5xl md:text-7xl xl:text-8xl leading-[0.85] mb-20 preserve-3d">
+                <motion.span initial={{ y: 40, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>The people </motion.span>
+                <motion.span initial={{ y: 40, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.1, duration: 0.8 }} className="not-italic font-light text-zinc-400">behind </motion.span>
+                <motion.span initial={{ y: 40, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.2, duration: 0.8 }} className="accent-text">EduFlex.</motion.span>
+              </h2>
+
+              <div className="space-y-32">
+                {FOUNDERS.map((founder, i) => {
+                  const isEven = i % 2 === 0;
+                  return (
+                    <div key={founder.name} className={`grid lg:grid-cols-12 gap-12 lg:gap-16 items-center`}>
+                      <motion.div
+                        initial={{ x: isEven ? -100 : 100, opacity: 0, rotateY: isEven ? 15 : -15 }}
+                        whileInView={{ x: 0, opacity: 1, rotateY: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 1, ...SPRING }}
+                        className="lg:col-span-5 relative preserve-3d"
+                      >
+                        <FounderImageCard src={founder.img} alt={founder.name} />
+                        <div className="absolute -bottom-6 -right-6 w-32 h-32 accent-bg opacity-10 rounded-full blur-3xl orb-3" />
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ x: isEven ? 100 : -100, opacity: 0 }}
+                        whileInView={{ x: 0, opacity: 1 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 1, ...SPRING }}
+                        className={`lg:col-span-7 ${isEven ? "" : "lg:order-first"}`}
+                      >
+                        <div className="max-w-xl">
+                          <motion.div
+                            initial={{ scaleX: 0 }}
+                            whileInView={{ scaleX: 1 }}
+                            transition={{ delay: 0.5, duration: 1 }}
+                            className="h-px w-24 accent-bg mb-8 origin-left"
+                          />
+                          <h3 className="font-display text-4xl md:text-5xl lg:text-6xl mb-6 leading-none">{founder.name}</h3>
+                          <div className="font-mono text-[10px] uppercase tracking-widest font-black text-zinc-600 mb-8">{founder.role}</div>
+
+                          <motion.div
+                            initial={{ opacity: 0, x: isEven ? 20 : -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.7, duration: 0.8 }}
+                            className="relative mb-10 pl-8 border-l-2 accent-border"
+                          >
+                            <p className="font-serif italic text-2xl md:text-3xl text-zinc-600 leading-relaxed">
+                              "{founder.pullQuote}"
+                            </p>
+                          </motion.div>
+
+                          <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.9, duration: 0.8 }}
+                            className="text-zinc-700 text-lg leading-relaxed mb-10"
+                          >
+                            {founder.bio}
+                          </motion.p>
+
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 1.1, duration: 0.8 }}
+                            whileHover={{ scale: 1.02 }}
+                          >
+                            <Btn href={waLink(`Hi ${founder.name}, I'd like to connect.`)} icon={<Icon name="arrow" size={14} />} className="magnetic-btn ripple">Connect with {founder.name.split(' ')[0]}</Btn>
+                          </motion.div>
+                        </div>
+                      </motion.div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      // Founder Image Card with 3D Tilt
+      function FounderImageCard({ src, alt }) {
+        const ref = useRef(null);
+        const [transform, setTransform] = useState({ rotateX: 0, rotateY: 0 });
+
+        const handleMouseMove = (e) => {
+          if (!ref.current) return;
+          const rect = ref.current.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width;
+          const y = (e.clientY - rect.top) / rect.height;
+          const rotateX = (y - 0.5) * -8;
+          const rotateY = (x - 0.5) * 8;
+          setTransform({ rotateX, rotateY });
+        };
+
+        const handleMouseLeave = () => {
+          setTransform({ rotateX: 0, rotateY: 0 });
+        };
+
+        return (
+          <motion.div
+            ref={ref}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            className="aspect-[4/5] bg-zinc-100 overflow-hidden rounded-2xl shadow-2xl relative group preserve-3d"
+            style={{
+              transform: `perspective(1000px) rotateX(${transform.rotateX}deg) rotateY(${transform.rotateY}deg)`,
+              transition: "transform 0.15s ease-out"
+            }}
+            whileHover={{ boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
+          >
+            <img src={src} alt={alt} referrerPolicy="no-referrer" className="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105" />
+            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/40 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-zinc-950/0 group-hover:bg-zinc-950/10 transition-colors duration-500" />
+          </motion.div>
+        );
+      }
+
+      function Team() {
+        return (
+          <section id="team" className="py-24 px-6 md:px-12 bg-zinc-950 text-white relative overflow-hidden">
+            <div className="absolute top-1/4 -left-20 w-96 h-96 rounded-full blur-[120px] opacity-20 orb-1" style={{ background: "var(--accent)" }} />
+            <div className="absolute bottom-1/4 -right-20 w-80 h-80 rounded-full blur-[100px] opacity-15 orb-2" style={{ background: "var(--accent-soft)" }} />
+            <div className="relative z-10">
+              <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 mb-16">
+                <div className="max-w-3xl">
+                  <div className="flex items-center gap-4 mb-6"><Eyebrow>Our team</Eyebrow><div className="h-px w-12 accent-bg" /></div>
+                  <h2 className="font-display text-5xl md:text-7xl xl:text-8xl leading-[0.85] text-white">
+                    {TEAM.length} experts <span className="not-italic font-light text-zinc-400">on your</span> <span className="accent-text">side.</span>
+                  </h2>
+                </div>
+                <p className="max-w-md text-zinc-400 text-base leading-relaxed">No call-centre handoffs. The person you meet on day one is the person who walks you to the embassy gate.</p>
+              </div>
+
+              <motion.div
+                variants={STAGGER_CONTAINER}
+                initial="initial"
+                whileInView="whileInView"
+                viewport={{ once: true, margin: "-100px" }}
+                className="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-zinc-200 border rule-border perspective-container"
+              >
+                {TEAM.map((m, i) => {
+                  const initials = m.name.split(' ').map(n => n[0]).join('');
+                  const num = (i + 1).toString().padStart(2, '0');
+                  return (
+                    <TiltCard
+                      key={m.name}
+                      variants={FADE_UP}
+                    >
+                      <div className="aspect-square relative overflow-hidden bg-zinc-100">
+                        {m.img ? (
+                          <>
+                            <img src={m.img} alt={m.name} referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-110" style={{ objectPosition: 'center 20%' }} />
+                            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                          </>
+                        ) : (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ background: "linear-gradient(135deg, var(--accent-soft) 0%, #fafafa 100%)" }}>
+                            <div className="font-display text-7xl accent-text leading-none mb-3">{initials}</div>
+                            <div className="font-mono text-[9px] uppercase tracking-widest font-black text-zinc-500">Photo coming soon</div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-6 md:p-10 transition-colors duration-500 relative overflow-hidden">
+                        <div className="flex items-center gap-3 mb-4 accent-text">
+                          <motion.div initial={{ width: 0 }} whileInView={{ width: 24 }} className="h-px accent-bg" />
+                          <span className="font-mono text-[9px] uppercase tracking-mega font-black">{num}</span>
+                        </div>
+                        <h3 className="font-display text-3xl tracking-tighter leading-none mb-2 text-zinc-900 group-hover:accent-text transition-colors duration-500">{m.name}</h3>
+                        <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-600 mb-6">{m.role}</p>
+                        <p className="text-zinc-700 text-sm leading-relaxed">{m.bio}</p>
+                      </div>
+                    </TiltCard>
+                  );
+                })}
+              </motion.div>
+            </div>
+          </section>
+        );
+      }
+
+      // 3D Tilt Card Component
+      function TiltCard({ children, variants, className = "" }) {
+        const ref = useRef(null);
+        const [transform, setTransform] = useState({ rotateX: 0, rotateY: 0 });
+
+        const handleMouseMove = (e) => {
+          if (!ref.current) return;
+          const rect = ref.current.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width;
+          const y = (e.clientY - rect.top) / rect.height;
+          const rotateX = (y - 0.5) * -10;
+          const rotateY = (x - 0.5) * 10;
+          setTransform({ rotateX, rotateY });
+        };
+
+        const handleMouseLeave = () => {
+          setTransform({ rotateX: 0, rotateY: 0 });
+        };
+
+        return (
+          <motion.div
+            ref={ref}
+            variants={variants}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            whileHover={{ backgroundColor: "var(--paper-2)", zIndex: 10 }}
+            className={`bg-white group tilt-card preserve-3d ${className}`}
+            style={{
+              transform: `perspective(1000px) rotateX(${transform.rotateX}deg) rotateY(${transform.rotateY}deg)`,
+              transition: "transform 0.15s ease-out"
+            }}
+          >
+            {children}
+          </motion.div>
+        );
+      }
+
+      function Engagement() {
+        return (
+          <section id="engagement" className="py-24 px-6 md:px-12 bg-white border-b rule-border">
+            <SectionHead
+              eyebrow="Our engagement"
+              title={[{ text: "Workshops," }, { text: "fairs, send-offs.", alt: true }]}
+              lede="A study-abroad consultancy is only as good as the room it builds. Here's what ours has been up to." />
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {ENGAGEMENT_PHOTOS.map((p, i) => (
+                <motion.div 
+                  key={i} 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ delay: (i % 3) * 0.1, duration: 0.5 }}
+                  className={`relative group overflow-hidden bg-zinc-100 ${p.w === 2 ? "md:col-span-2" : ""}`} style={{ aspectRatio: p.w === 2 ? "2/1" : "4/5" }}>
+                  <img src={p.img} alt={p.caption} referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/85 via-zinc-950/10 to-transparent" />
+                  <div className="absolute top-4 left-4 px-2.5 py-1 accent-bg text-white font-mono text-[9px] font-black uppercase tracking-widest">{p.tag}</div>
+                  <div className="absolute bottom-0 inset-x-0 p-5">
+                    <p className="text-white font-bold uppercase text-sm tracking-tight leading-tight">{p.caption}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        );
+      }
+
+      function Blog() {
+        const [hero, ...rest] = BLOG_POSTS;
+        return (
+          <section id="blog" className="py-24 px-6 md:px-12 bg-zinc-50 border-b rule-border">
+            <SectionHead
+              eyebrow="Field notes"
+              title={[{ text: "From the" }, { text: "blog.", alt: true }]}
+              lede="Visa policy moves quickly. We write field notes when it does — and when something works for our students." />
+            <div className="grid lg:grid-cols-12 gap-px bg-zinc-200 border rule-border">
+              <a href="#" className="lg:col-span-7 bg-white group relative overflow-hidden block">
+                <div className="aspect-[16/10] lg:aspect-auto lg:h-full overflow-hidden bg-zinc-100">
+                  <img src={hero.img} alt={hero.title} referrerPolicy="no-referrer" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                </div>
+                <div className="absolute bottom-0 inset-x-0 p-8 md:p-10 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent">
+                  <div className="flex items-center gap-3 mb-4 text-white">
+                    <span className="px-2.5 py-1 accent-bg text-white font-mono text-[9px] font-black uppercase tracking-widest">{hero.tag}</span>
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-300">{hero.date} · {hero.read} read</span>
+                  </div>
+                  <h3 className="font-display text-3xl md:text-5xl text-white leading-[0.95] tracking-tighter max-w-3xl">{hero.title}</h3>
+                  <div className="mt-6 flex items-center gap-2 text-white font-mono text-[10px] uppercase tracking-widest font-black"><span>Read article</span><Icon name="arrow" size={14} /></div>
+                </div>
+              </a>
+              <div className="lg:col-span-5 grid bg-zinc-200 gap-px">
+                {rest.map((p, i) => (
+                  <a key={i} href="#" className="bg-white p-6 md:p-8 flex gap-5 group hover:bg-zinc-50 transition-colors">
+                    <div className="w-28 h-28 flex-shrink-0 overflow-hidden bg-zinc-100">
+                      <img src={p.img} alt={p.title} referrerPolicy="no-referrer" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="px-2 py-0.5 border accent-border accent-text font-mono text-[9px] font-black uppercase tracking-widest">{p.tag}</span>
+                        <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-400">{p.read}</span>
+                      </div>
+                      <h4 className="font-bold text-base leading-snug group-hover:accent-text transition-colors">{p.title}</h4>
+                      <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-400 mt-auto pt-3">{p.date}</span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+            <div className="mt-10 flex justify-end">
+              <Btn href="#" icon={<Icon name="arrow" size={14} />}>All articles</Btn>
+            </div>
+          </section>
+        );
+      }
+
+      // =============================================================================
+      // CONTACT & FOOTER
+      // =============================================================================
+      const Field = ({ label, value, onChange, type = "text" }) => (
+        <div>
+          <label className="font-mono text-[10px] uppercase tracking-widest font-black text-zinc-500 block mb-2">{label}</label>
+          <input type={type} value={value} onChange={e => onChange(e.target.value)} required
+            className="w-full bg-zinc-900 border border-white/10 px-4 py-3.5 text-sm font-medium outline-none focus:border-current focus:accent-text" />
+        </div>
+      );
+
+      const FootCol = ({ title, links }) => (
+        <div>
+          <div className="font-mono text-[10px] uppercase tracking-widest font-black text-zinc-400 mb-4">{title}</div>
+          <ul className="flex flex-col gap-3">
+            {links.map(([label, href]) => (
+              <li key={label}><a href={href} className="text-sm font-medium text-zinc-700 hover:accent-text transition-colors">{label}</a></li>
+            ))}
+          </ul>
+        </div>
+      );
+
+      function Contact() {
+        const [f, setF] = useState({ name: "", phone: "", destination: "", goal: "", agreed: false });
+        const valid = f.name.trim() && f.phone.trim() && f.destination && f.goal.trim() && f.agreed;
+        const [sent, setSent] = useState(false);
+
+        const submit = (e) => {
+          e.preventDefault();
+          if (!valid) return;
+          const msg = `Hi EduFlex Global!\n\nName: ${f.name}\nPhone: ${f.phone}\nDestination: ${f.destination}\nGoal: ${f.goal}\n\nLooking forward to hearing from you.`;
+          window.open(`https://wa.me/${PHONE_RAW}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+          setSent(true);
+          setTimeout(() => setSent(false), 4000);
+        };
+
+        return (
+          <section id="contact" className="bg-white overflow-hidden">
+            <div className="px-6 md:px-12 py-24 grid lg:grid-cols-2 gap-16">
+              {/* Left: contact info */}
+              <motion.div
+                initial={{ x: -50, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="flex items-center gap-4 mb-6"><Eyebrow>Quick consultation</Eyebrow><Rule /></div>
+                <h2 className="font-display text-5xl md:text-7xl leading-[0.85] mb-8">
+                  Tell us where <span className="not-italic font-light text-zinc-400">you want to</span> <span className="accent-text">go.</span>
+                </h2>
+                <p className="max-w-md text-zinc-500 text-lg leading-relaxed mb-12">
+                  Every inquiry routes straight to WhatsApp — same number we answer the office phone on. No call-centre, no ticket queue. Real humans, fast.
+                </p>
+
+                <div className="flex flex-col gap-5 mb-12">
+                  <a href={`tel:${PHONE_RAW}`} className="flex items-center gap-5 group">
+                    <span className="w-12 h-12 rounded-full border rule-border flex items-center justify-center group-hover:accent-bg group-hover:text-white group-hover:accent-border transition-all">
+                      <Icon name="phone" size={18} />
+                    </span>
+                    <div>
+                      <div className="font-mono text-[10px] uppercase tracking-widest font-black text-zinc-400">Phone & WhatsApp</div>
+                      <div className="font-black text-xl group-hover:accent-text transition-colors">{PHONE_DISPLAY}</div>
+                    </div>
+                  </a>
+                  <a href={`mailto:${EMAIL}`} className="flex items-center gap-5 group">
+                    <span className="w-12 h-12 rounded-full border rule-border flex items-center justify-center group-hover:accent-bg group-hover:text-white group-hover:accent-border transition-all">
+                      <Icon name="mail" size={18} />
+                    </span>
+                    <div>
+                      <div className="font-mono text-[10px] uppercase tracking-widest font-black text-zinc-400">Email us</div>
+                      <div className="font-bold text-base group-hover:accent-text transition-colors">{EMAIL}</div>
+                    </div>
+                  </a>
+                  <div className="flex items-start gap-5">
+                    <span className="w-12 h-12 rounded-full border rule-border flex items-center justify-center mt-0.5">
+                      <Icon name="pin" size={18} />
+                    </span>
+                    <div>
+                      <div className="font-mono text-[10px] uppercase tracking-widest font-black text-zinc-400">Visit us</div>
+                      {ADDRESS_LINES.map((l, i) => <div key={i} className={`text-zinc-${i === ADDRESS_LINES.length - 1 ? "500" : "900"} ${i === 0 ? "font-bold" : ""}`}>{l}</div>)}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t rule-border pt-8">
+                  <div className="font-mono text-[10px] uppercase tracking-widest font-black text-zinc-400 mb-4">Find us online</div>
+                  <div className="flex gap-3">
+                    {[
+                      ["fb", "Facebook",  "https://facebook.com"],
+                      ["ig", "Instagram", "https://instagram.com"],
+                      ["tt", "TikTok",    "https://tiktok.com"],
+                      ["yt", "YouTube",   "https://youtube.com"],
+                      ["li", "LinkedIn",  "https://linkedin.com"],
+                    ].map(([ic, label, href]) => (
+                      <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
+                        className="w-11 h-11 border rule-border flex items-center justify-center hover:accent-bg hover:text-white hover:accent-border transition-all">
+                        <Icon name={ic} size={16} />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Right: form */}
+              <motion.form 
+                initial={{ x: 50, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6 }}
+                onSubmit={submit} 
+                className="bg-zinc-950 text-white p-8 md:p-12 relative overflow-hidden"
+              >
+                <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-[100px] opacity-30" style={{ background: "var(--accent)" }} />
+                <div className="relative z-10">
+                  <div className="flex items-center gap-4 mb-6"><span className="font-mono text-[10px] uppercase tracking-mega font-black accent-text">Talk to us</span><div className="h-px w-12 accent-bg" /></div>
+                  <h3 className="font-display text-3xl md:text-4xl mb-2 leading-tight">Quick consultation.</h3>
+                  <p className="text-zinc-400 text-sm mb-8">Submitting opens WhatsApp with your details prefilled.</p>
+
+                  <div className="space-y-3">
+                    <Field label="Full name" value={f.name} onChange={v => setF({ ...f, name: v })} />
+                    <Field label="Phone / WhatsApp" value={f.phone} onChange={v => setF({ ...f, phone: v })} type="tel" />
+                    <div>
+                      <label className="font-mono text-[10px] uppercase tracking-widest font-black text-zinc-500 block mb-2">Destination</label>
+                      <select value={f.destination} onChange={e => setF({ ...f, destination: e.target.value })} required
+                        className="w-full bg-zinc-900 border border-white/10 px-4 py-3.5 text-sm font-medium outline-none focus:border-current focus:accent-text appearance-none cursor-pointer">
+                        <option value="">Select a country —</option>
+                        {DESTINATIONS.map(d => <option key={d.code} value={d.name}>{d.flag}  {d.name}</option>)}
+                        <option value="Other">Not sure yet — help me decide</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="font-mono text-[10px] uppercase tracking-widest font-black text-zinc-500 block mb-2">Your goal</label>
+                      <textarea value={f.goal} onChange={e => setF({ ...f, goal: e.target.value })} required rows={3} placeholder="Bachelor's? Master's? Course? IELTS score? Tell us what's on your mind."
+                        className="w-full bg-zinc-900 border border-white/10 px-4 py-3 text-sm font-medium outline-none focus:border-current focus:accent-text resize-none" />
+                    </div>
+
+                    <label className="flex items-start gap-3 cursor-pointer pt-2">
+                      <input type="checkbox" checked={f.agreed} onChange={e => setF({ ...f, agreed: e.target.checked })} className="hidden" required />
+                      <span className={`mt-0.5 w-5 h-5 border-2 flex items-center justify-center transition-colors flex-shrink-0 ${f.agreed ? "accent-bg accent-border" : "bg-transparent border-zinc-600"}`}>
+                        {f.agreed && <Icon name="check" size={14} className="text-white" />}
+                      </span>
+                      <span className="text-[11px] text-zinc-400 leading-relaxed">I agree to be contacted by EduFlex Global on WhatsApp.</span>
+                    </label>
+
+                    <button type="submit" disabled={!valid}
+                      className={`w-full mt-3 p-4 text-[11px] font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${valid ? "bg-white text-zinc-900 hover:accent-bg hover:text-white" : "bg-zinc-800 text-zinc-500 cursor-not-allowed"}`}>
+                      {sent ? <>Opening WhatsApp... <Icon name="check" size={16} /></> : <>Send via WhatsApp <Icon name="chat" size={16} /></>}
+                    </button>
+                  </div>
+                </div>
+              </motion.form>
+            </div>
+
+            {/* Bottom strip */}
+            <div className="border-t rule-border px-6 md:px-12 py-12 grid md:grid-cols-12 gap-10 items-start">
+              <div className="md:col-span-5">
+                <Logo />
+                <p className="text-zinc-500 text-sm leading-relaxed mt-6 max-w-md">
+                  Authentic visa services. Career-first guidance. Honest advice for students from Sylhet to the world.
+                </p>
+              </div>
+              <div className="md:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-8">
+                <FootCol title="Destinations" links={DESTINATIONS.slice(0, 4).map(d => [d.name, "#destinations"])} />
+                <FootCol title="Services"     links={[["Why EduFlex","#why"],["Process","#process"],["Stories","#stories"],["Team","#team"]]} />
+                <FootCol title="Resources"    links={[["Blog","#blog"],["Engagement","#engagement"],["Contact","#contact"]]} />
+              </div>
+            </div>
+            <div className="border-t rule-border px-6 md:px-12 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="font-mono text-[10px] uppercase tracking-widest font-bold text-zinc-400">© 2026 EduFlex Global. All rights reserved.</p>
+              <p className="font-mono text-[10px] uppercase tracking-widest font-bold text-zinc-400">Sylhet · Bangladesh — Your compass to success.</p>
+            </div>
+          </section>
+        );
+      }
+
+      function FloatingWA() {
+        return (
+          <motion.a 
+            href={waLink()} target="_blank" rel="noopener noreferrer"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 20, delay: 1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="fixed bottom-6 right-6 z-40 group flex items-center gap-3 pl-3 pr-5 py-3 bg-green-500 hover:bg-green-600 text-white shadow-2xl rounded-full transition-colors">
+            <span className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center"><Icon name="chat" size={18} /></span>
+            <span className="font-bold text-sm pr-1 hidden sm:inline">Chat on WhatsApp</span>
+            <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-white animate-ping" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-white" />
+          </motion.a>
+        );
+      }
+
+      function TweaksUI() {
+        const [t, set] = useTweaks(TWEAK_DEFAULTS);
+        return (
+          <TweaksPanel title="Tweaks">
+            <TweakSection label="Brand">
+              <TweakColor label="Accent" value={t.accent} onChange={v => set("accent", v)} />
+              <TweakColor label="Accent soft" value={t.accentSoft} onChange={v => set("accentSoft", v)} />
+            </TweakSection>
+            <TweakSection label="Hero">
+              <TweakToggle label="Dark hero" value={t.darkHero} onChange={v => set("darkHero", v)} />
+            </TweakSection>
+            <TweakSection label="Stories layout">
+              <TweakRadio value={t.successLayout} onChange={v => set("successLayout", v)} options={[{value:"grid",label:"Grid"},{value:"wall",label:"Wall"}]} />
+            </TweakSection>
+            <TweakSection label="Sections">
+              <TweakToggle label="Show Engagement" value={t.showEngagement} onChange={v => set("showEngagement", v)} />
+              <TweakToggle label="Show Blog" value={t.showBlog} onChange={v => set("showBlog", v)} />
+            </TweakSection>
+          </TweaksPanel>
+        );
+      }
+
+      // ── Scroll Progress Bar ─────────────────────────────────────────────────
+      function ScrollProgressBar() {
+        const { scrollYProgress } = useScroll();
+        return (
+          <motion.div
+            style={{ background: "var(--accent)", scaleX: scrollYProgress, transformOrigin: "left", position: "fixed", top: 0, left: 0, right: 0, height: "3px", zIndex: 9999 }}
+          />
+        );
+      }
+
+      // ── Glowing Cursor Trail ─────────────────────────────────────────────────
+      function CursorTrail() {
+        const canvasRef = useRef(null);
+        useEffect(() => {
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext("2d");
+          let w = canvas.width = window.innerWidth;
+          let h = canvas.height = window.innerHeight;
+          const trail = [];
+          const MAX = 28;
+          let mouse = { x: w / 2, y: h / 2 };
+          const onResize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
+          const onMove = e => { mouse = { x: e.clientX, y: e.clientY }; };
+          window.addEventListener("resize", onResize);
+          window.addEventListener("mousemove", onMove);
+          let raf;
+          function tick() {
+            trail.push({ x: mouse.x, y: mouse.y, age: 0 });
+            if (trail.length > MAX) trail.shift();
+            ctx.clearRect(0, 0, w, h);
+            for (let i = 0; i < trail.length; i++) {
+              const p = trail[i];
+              p.age++;
+              const life = 1 - p.age / MAX;
+              const r = life * 10;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+              const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 2);
+              g.addColorStop(0, `rgba(238,90,43,${life * 0.6})`);
+              g.addColorStop(1, `rgba(238,90,43,0)`);
+              ctx.fillStyle = g;
+              ctx.fill();
+            }
+            raf = requestAnimationFrame(tick);
+          }
+          tick();
+          return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", onResize); window.removeEventListener("mousemove", onMove); };
+        }, []);
+        return <canvas ref={canvasRef} style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9998 }} />;
+      }
+
+      // ── Particle Network Canvas ──────────────────────────────────────────────
+      function ParticleCanvas() {
+        const canvasRef = useRef(null);
+        useEffect(() => {
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext("2d");
+          let w = canvas.width = window.innerWidth;
+          let h = canvas.height = window.innerHeight;
+          const particles = Array.from({ length: 60 }, () => ({
+            x: Math.random() * w, y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+            r: Math.random() * 2 + 1
+          }));
+          const onResize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
+          window.addEventListener("resize", onResize);
+          let raf;
+          function tick() {
+            ctx.clearRect(0, 0, w, h);
+            for (const p of particles) {
+              p.x += p.vx; p.y += p.vy;
+              if (p.x < 0 || p.x > w) p.vx *= -1;
+              if (p.y < 0 || p.y > h) p.vy *= -1;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+              ctx.fillStyle = "rgba(238,90,43,0.35)";
+              ctx.fill();
+            }
+            for (let i = 0; i < particles.length; i++) {
+              for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 120) {
+                  ctx.beginPath();
+                  ctx.moveTo(particles[i].x, particles[i].y);
+                  ctx.lineTo(particles[j].x, particles[j].y);
+                  ctx.strokeStyle = `rgba(238,90,43,${0.12 * (1 - dist / 120)})`;
+                  ctx.lineWidth = 0.8;
+                  ctx.stroke();
+                }
+              }
+            }
+            raf = requestAnimationFrame(tick);
+          }
+          tick();
+          return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", onResize); };
+        }, []);
+        return <canvas ref={canvasRef} id="particle-canvas" />;
+      }
+
+      // ── Cinematic Intro ──────────────────────────────────────────────────────
+      function CinematicIntro() {
+        const [done, setDone] = useState(false);
+        useEffect(() => { const t = setTimeout(() => setDone(true), 2200); return () => clearTimeout(t); }, []);
+        return (
+          <AnimatePresence>
+            {!done && (
+              <motion.div
+                key="intro"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0, transition: { duration: 0.7, ease: "easeInOut" } }}
+                style={{ position: "fixed", inset: 0, zIndex: 99999, background: "var(--ink)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 16 }}
+              >
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ width: 120, height: 3, background: "var(--accent)", transformOrigin: "left", borderRadius: 2 }}
+                />
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.8 }}
+                  style={{ color: "white", fontFamily: "JetBrains Mono, monospace", fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", opacity: 0.6 }}
+                >
+                  EduFlex Global
+                </motion.p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        );
+      }
+
+      // ── Text Scramble Hook ───────────────────────────────────────────────────
+      function useTextScramble(text, trigger) {
+        const [display, setDisplay] = useState(text);
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$";
+        useEffect(() => {
+          if (!trigger) return;
+          let frame = 0;
+          const total = 18;
+          let raf;
+          function tick() {
+            setDisplay(text.split("").map((c, i) => {
+              if (c === " ") return " ";
+              if (frame / total > i / text.length) return c;
+              return chars[Math.floor(Math.random() * chars.length)];
+            }).join(""));
+            frame++;
+            if (frame <= total) raf = requestAnimationFrame(tick);
+            else setDisplay(text);
+          }
+          tick();
+          return () => cancelAnimationFrame(raf);
+        }, [trigger, text]);
+        return display;
+      }
+
+      function App() {
+        const [t] = useTweaks(TWEAK_DEFAULTS);
+        return (
+          <div data-screen-label="EduFlex Global Home">
+            <CinematicIntro />
+            <ScrollProgressBar />
+            <CursorTrail />
+            <ParticleCanvas />
+            <Navbar />
+            <Hero dark={t.darkHero} />
+            <Destinations />
+            <Why />
+            <Process />
+            <Stories layout={t.successLayout} />
+            <Founder />
+            <Team />
+            {t.showEngagement && <Engagement />}
+            {t.showBlog && <Blog />}
+            <Contact />
+            <FloatingWA />
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>
