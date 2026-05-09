@@ -713,6 +713,83 @@
         { title: "Malta vs Cyprus: the honest cost comparison",         tag: "Compare",    date: "Mar 09, 2026", read: "7 min", img: "assets/events/outdoor-fair.jpg" },
       ];
 
+      const AEROPATH_CONTENT_URL = "https://aeropath-os.vercel.app/api/public/website-content/demo";
+
+      function firstText(...values) {
+        return values.find((value) => typeof value === "string" && value.trim()) || "";
+      }
+
+      function shortCode(value, fallback) {
+        return firstText(value, fallback).replace(/[^A-Za-z]/g, "").slice(0, 3).toUpperCase() || fallback;
+      }
+
+      function mapAeroPathContent(raw) {
+        const content = raw?.content || {};
+        const universities = Array.isArray(content.universities) ? content.universities : [];
+
+        return {
+          destinations: universities.length
+            ? universities.map((item, index) => ({
+                name: firstText(item.name, `University ${index + 1}`),
+                code: shortCode(item.country || item.name, `U${index + 1}`),
+                iata: shortCode(item.country || item.name, "UNI"),
+                flag: "◆",
+                tag: firstText(item.country, "Partner University"),
+                blurb: firstText(item.description, "Partner university guidance available through EduFlex Global."),
+                color: "#1e3a5f",
+                img: firstText(item.logo_url),
+              }))
+            : DESTINATIONS,
+          stories: Array.isArray(content.testimonials) && content.testimonials.length
+            ? content.testimonials.map((item) => ({
+                name: firstText(item.name, "Student"),
+                country: firstText(item.role, "Success Story"),
+                university: firstText(item.quote, "EduFlex Global student success story."),
+                program: "Testimonial",
+                year: "",
+                img: firstText(item.image_url),
+              }))
+            : SUCCESS_STORIES,
+          team: Array.isArray(content.staff) && content.staff.length
+            ? content.staff.map((item) => ({
+                name: firstText(item.name, "Team Member"),
+                role: firstText(item.role, "EduFlex Global"),
+                bio: firstText(item.bio, "Student support specialist at EduFlex Global."),
+                img: firstText(item.image_url),
+              }))
+            : TEAM,
+          photos: Array.isArray(content.photos) && content.photos.length
+            ? content.photos.map((item) => ({
+                caption: firstText(item.caption, item.alt, "EduFlex Global"),
+                tag: "Gallery",
+                img: firstText(item.image_url),
+                w: 1,
+              })).filter((item) => item.img)
+            : ENGAGEMENT_PHOTOS,
+          programmes: Array.isArray(content.programmes) ? content.programmes : [],
+          universities,
+          faqs: Array.isArray(content.faqs) ? content.faqs : [],
+        };
+      }
+
+      function useAeroPathContent() {
+        const [content, setContent] = useState(() => mapAeroPathContent(null));
+
+        useEffect(() => {
+          let active = true;
+          fetch(AEROPATH_CONTENT_URL)
+            .then((res) => res.ok ? res.json() : null)
+            .then((data) => {
+              if (active && data) setContent(mapAeroPathContent(data));
+            })
+            .catch(() => {});
+
+          return () => { active = false; };
+        }, []);
+
+        return content;
+      }
+
       // =============================================================================
       // SHARED PRIMITIVES
       // =============================================================================
@@ -1028,9 +1105,11 @@
 
 
 
-      function Destinations() {
-        const [active, setActive] = useState(DESTINATIONS[0].code);
-        const cur = DESTINATIONS.find(d => d.code === active);
+      function Destinations({ destinations }) {
+        const items = destinations && destinations.length ? destinations : DESTINATIONS;
+        const [active, setActive] = useState(items[0].code);
+        useEffect(() => { if (!items.find(d => d.code === active)) setActive(items[0].code); }, [items, active]);
+        const cur = items.find(d => d.code === active) || items[0];
         return (
           <section id="destinations" className="py-12 md:py-24 px-6 md:px-12 border-b rule-border bg-white">
             <SectionHead
@@ -1040,7 +1119,7 @@
 
             <div className="grid lg:grid-cols-12 gap-px bg-zinc-200 border rule-border">
               <div className="lg:col-span-4 bg-white overflow-y-auto max-h-96 lg:max-h-none">
-                {DESTINATIONS.map((d) => (
+                {items.map((d) => (
                   <button key={d.code} onClick={() => setActive(d.code)}
                     className={`w-full text-left px-4 py-4 md:px-8 md:py-6 flex items-center justify-between border-b rule-border last:border-b-0 transition-all group ${active === d.code ? "bg-zinc-900 text-white" : "hover:bg-zinc-50"}`}>
                     <div className="flex items-center gap-5">
@@ -1175,7 +1254,9 @@
         );
       }
 
-      function Stories({ layout }) {
+      function Stories({ layout, stories, destinations }) {
+        const items = stories && stories.length ? stories : SUCCESS_STORIES;
+        const destinationItems = destinations && destinations.length ? destinations : DESTINATIONS;
         return (
           <section id="stories" className="border-b rule-border bg-white">
             <div className="px-6 md:px-12 py-12 md:py-20 border-b rule-border">
@@ -1186,7 +1267,7 @@
             </div>
             {layout === "wall" ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-zinc-200">
-                {SUCCESS_STORIES.map((s, i) => (
+                {items.map((s, i) => (
                   <motion.div 
                     key={i} 
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -1208,7 +1289,7 @@
               </div>
             ) : (
               <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6 px-6 md:px-12 py-10 bg-zinc-50/50">
-                {SUCCESS_STORIES.map((s, i) => (
+                {items.map((s, i) => (
                   <motion.div 
                     key={i} 
                     initial={{ opacity: 0, y: 30 }}
@@ -1234,7 +1315,7 @@
                       {/* Optional Program Badge */}
                       <div className="mt-6 pt-6 border-t rule-border flex items-center justify-between">
                          <span className="text-xs font-medium text-zinc-600 uppercase tracking-wider">{s.program}</span>
-                         <span className="text-2xl">{DESTINATIONS.find(d => d.name === s.country)?.flag}</span>
+                         <span className="text-2xl">{destinationItems.find(d => d.name === s.country)?.flag}</span>
                       </div>
                     </div>
                   </motion.div>
@@ -1375,7 +1456,8 @@
         );
       }
 
-      function Team() {
+      function Team({ team }) {
+        const members = team && team.length ? team : TEAM;
         return (
           <section id="team" className="py-24 px-6 md:px-12 bg-zinc-950 text-white relative overflow-hidden">
             <div className="absolute top-1/4 -left-20 w-96 h-96 rounded-full blur-[120px] opacity-20 orb-1" style={{ background: "var(--accent)" }} />
@@ -1385,7 +1467,7 @@
                 <div className="max-w-3xl">
                   <div className="flex items-center gap-4 mb-6"><Eyebrow>Our team</Eyebrow><div className="h-px w-12 accent-bg" /></div>
                   <h2 className="font-display text-5xl md:text-7xl xl:text-8xl leading-[0.85] text-white">
-                    {TEAM.length} experts <span className="not-italic font-light text-zinc-400">on your</span> <span className="accent-text">side.</span>
+                    {members.length} experts <span className="not-italic font-light text-zinc-400">on your</span> <span className="accent-text">side.</span>
                   </h2>
                 </div>
                 <p className="max-w-md text-zinc-400 text-base leading-relaxed">No call-centre handoffs. The person you meet on day one is the person who walks you to the embassy gate.</p>
@@ -1398,7 +1480,7 @@
                 viewport={{ once: true, margin: "-100px" }}
                 className="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-zinc-200 border rule-border perspective-container"
               >
-                {TEAM.map((m, i) => {
+                {members.map((m, i) => {
                   const initials = m.name.split(' ').map(n => n[0]).join('');
                   const num = (i + 1).toString().padStart(2, '0');
                   return (
@@ -1474,7 +1556,74 @@
         );
       }
 
-      function Engagement() {
+      function Programmes({ programmes }) {
+        if (!programmes || !programmes.length) return null;
+
+        return (
+          <section id="programmes" className="py-24 px-6 md:px-12 bg-zinc-50 border-b rule-border">
+            <SectionHead
+              eyebrow="Featured programmes"
+              title={[{ text: "Courses with" }, { text: "clear pathways.", alt: true }]}
+              lede="Programmes published from the EduFlex dashboard." />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-zinc-200 border rule-border">
+              {programmes.map((p, i) => (
+                <motion.div
+                  key={p.id || `${p.title}-${i}`}
+                  variants={FADE_UP}
+                  initial="initial"
+                  whileInView="whileInView"
+                  viewport={{ once: true, margin: "-50px" }}
+                  className="bg-white p-8 md:p-10 group hover:bg-zinc-950 hover:text-white transition-colors duration-500"
+                >
+                  <div className="font-mono text-[10px] uppercase tracking-widest font-black accent-text mb-6">{firstText(p.country, "Global")}</div>
+                  <h3 className="font-display text-3xl tracking-tight leading-none mb-4">{firstText(p.title, "Programme")}</h3>
+                  {p.duration && <p className="text-xs uppercase tracking-widest font-bold text-zinc-400 mb-6">{p.duration}</p>}
+                  <p className="text-sm leading-relaxed text-zinc-600 group-hover:text-zinc-300">{firstText(p.description, "Contact EduFlex Global for programme details.")}</p>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        );
+      }
+
+      function Universities({ universities }) {
+        if (!universities || !universities.length) return null;
+
+        return (
+          <section id="universities" className="py-24 px-6 md:px-12 bg-white border-b rule-border">
+            <SectionHead
+              eyebrow="Partner universities"
+              title={[{ text: "University options" }, { text: "we can guide.", alt: true }]}
+              lede="Partner and featured universities published from the EduFlex dashboard." />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-200 border rule-border">
+              {universities.map((u, i) => (
+                <motion.div
+                  key={u.id || `${u.name}-${i}`}
+                  variants={FADE_UP}
+                  initial="initial"
+                  whileInView="whileInView"
+                  viewport={{ once: true, margin: "-50px" }}
+                  className="bg-zinc-50 p-6 md:p-8 min-h-64 flex flex-col"
+                >
+                  {u.logo_url ? (
+                    <div className="h-20 mb-8 flex items-center">
+                      <img src={u.logo_url} alt={firstText(u.name, "University")} referrerPolicy="no-referrer" className="max-h-16 max-w-full object-contain" />
+                    </div>
+                  ) : (
+                    <div className="h-20 mb-8 flex items-center"><span className="font-display text-6xl accent-text">U</span></div>
+                  )}
+                  <h3 className="font-display text-2xl tracking-tight leading-none mb-3">{firstText(u.name, "University")}</h3>
+                  <p className="font-mono text-[10px] uppercase tracking-widest font-black text-zinc-400 mb-5">{firstText(u.country, "International")}</p>
+                  <p className="text-sm text-zinc-600 leading-relaxed mt-auto">{firstText(u.description, "Ask EduFlex Global about admission options.")}</p>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        );
+      }
+
+      function Engagement({ photos }) {
+        const items = photos && photos.length ? photos : ENGAGEMENT_PHOTOS;
         return (
           <section id="engagement" className="py-24 px-6 md:px-12 bg-white border-b rule-border">
             <SectionHead
@@ -1482,7 +1631,7 @@
               title={[{ text: "Workshops," }, { text: "fairs, send-offs.", alt: true }]}
               lede="A study-abroad consultancy is only as good as the room it builds. Here's what ours has been up to." />
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {ENGAGEMENT_PHOTOS.map((p, i) => (
+              {items.map((p, i) => (
                 <motion.div 
                   key={i} 
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -1498,6 +1647,32 @@
                   </div>
                 </motion.div>
               ))}
+            </div>
+          </section>
+        );
+      }
+
+      function FAQ({ faqs }) {
+        if (!faqs || !faqs.length) return null;
+
+        return (
+          <section id="faq" className="py-24 px-6 md:px-12 bg-zinc-950 text-white border-b rule-border">
+            <div className="grid lg:grid-cols-12 gap-12">
+              <div className="lg:col-span-5">
+                <div className="flex items-center gap-4 mb-6"><Eyebrow>FAQ</Eyebrow><div className="h-px w-12 accent-bg" /></div>
+                <h2 className="font-display text-5xl md:text-7xl leading-[0.85]">Answers before <span className="accent-text">you ask.</span></h2>
+              </div>
+              <div className="lg:col-span-7 divide-y divide-white/10 border-y border-white/10">
+                {faqs.map((faq, i) => (
+                  <details key={faq.id || i} className="group py-6">
+                    <summary className="cursor-pointer list-none flex items-center justify-between gap-6">
+                      <span className="font-display text-2xl tracking-tight">{firstText(faq.question, "Question")}</span>
+                      <span className="accent-text font-mono text-xl group-open:rotate-45 transition-transform">+</span>
+                    </summary>
+                    <p className="text-zinc-400 leading-relaxed mt-5 max-w-2xl">{firstText(faq.answer, "Contact EduFlex Global for details.")}</p>
+                  </details>
+                ))}
+              </div>
             </div>
           </section>
         );
@@ -1827,19 +2002,23 @@
 
       function App() {
         const [t] = useTweaks(TWEAK_DEFAULTS);
+        const aeroPath = useAeroPathContent();
         return (
           <div data-screen-label="EduFlex Global Home">
             <CinematicIntro />
             <Navbar />
             <Hero dark={t.darkHero} />
-            <Destinations />
+            <Destinations destinations={aeroPath.destinations} />
+            <Programmes programmes={aeroPath.programmes} />
+            <Universities universities={aeroPath.universities} />
             <Why />
             <Process />
-            <Stories layout={t.successLayout} />
+            <Stories layout={t.successLayout} stories={aeroPath.stories} destinations={aeroPath.destinations} />
             <Founder />
-            <Team />
-            {t.showEngagement && <Engagement />}
+            <Team team={aeroPath.team} />
+            {t.showEngagement && <Engagement photos={aeroPath.photos} />}
             {t.showBlog && <Blog />}
+            <FAQ faqs={aeroPath.faqs} />
             <Contact />
             <FloatingWA />
           </div>
