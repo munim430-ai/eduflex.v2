@@ -724,11 +724,83 @@
         return firstText(value, fallback).replace(/[^A-Za-z]/g, "").slice(0, 3).toUpperCase() || fallback;
       }
 
+      function phoneDigits(value, fallback = PHONE_RAW) {
+        return firstText(value).replace(/\D/g, "") || fallback;
+      }
+
+      function splitAddress(value) {
+        const lines = firstText(value)
+          .split(/\r?\n|,/)
+          .map((line) => line.trim())
+          .filter(Boolean);
+        return lines.length ? lines : ADDRESS_LINES;
+      }
+
+      function upsertMeta(selector, attrs, content) {
+        if (!content) return;
+        let tag = document.head.querySelector(selector);
+        if (!tag) {
+          tag = document.createElement("meta");
+          Object.entries(attrs).forEach(([key, value]) => tag.setAttribute(key, value));
+          document.head.appendChild(tag);
+        }
+        tag.setAttribute("content", content);
+      }
+
+      function applyCmsSeo(site, agency) {
+        const seo = site?.seo || {};
+        const title = firstText(seo.title, agency?.name ? `${agency.name} | Study Abroad` : "");
+        const description = firstText(seo.description);
+        const image = firstText(seo.og_image_url, site?.hero?.background_image_url);
+        if (title) {
+          document.title = title;
+          upsertMeta('meta[property="og:title"]', { property: "og:title" }, title);
+        }
+        upsertMeta('meta[name="description"]', { name: "description" }, description);
+        upsertMeta('meta[property="og:description"]', { property: "og:description" }, description);
+        upsertMeta('meta[property="og:image"]', { property: "og:image" }, image);
+      }
+
       function mapAeroPathContent(raw) {
         const content = raw?.content || {};
         const universities = Array.isArray(content.universities) ? content.universities : [];
+        const site = content.site || {};
+        const mediaLibrary = Array.isArray(content.mediaLibrary) ? content.mediaLibrary : [];
 
         return {
+          site: {
+            hero: {
+              headline: firstText(site.hero?.headline),
+              subheadline: firstText(site.hero?.subheadline),
+              cta_label: firstText(site.hero?.cta_label),
+              cta_url: firstText(site.hero?.cta_url),
+              background_image_url: firstText(site.hero?.background_image_url),
+            },
+            about: {
+              heading: firstText(site.about?.heading),
+              body: firstText(site.about?.body),
+              image_url: firstText(site.about?.image_url),
+            },
+            contact: {
+              phone: firstText(site.contact?.phone),
+              email: firstText(site.contact?.email),
+              address: firstText(site.contact?.address),
+              whatsapp: firstText(site.contact?.whatsapp),
+            },
+            seo: {
+              title: firstText(site.seo?.title),
+              description: firstText(site.seo?.description),
+              og_image_url: firstText(site.seo?.og_image_url),
+            },
+          },
+          mediaLibrary: mediaLibrary
+            .map((item, index) => ({
+              title: firstText(item.title, item.alt, item.caption, `Media ${index + 1}`),
+              type: firstText(item.type, "Image"),
+              url: firstText(item.url, item.image_url),
+              alt: firstText(item.alt, item.title, "EduFlex Global media"),
+            }))
+            .filter((item) => item.url),
           destinations: universities.length
             ? universities.map((item, index) => ({
                 name: firstText(item.name, `University ${index + 1}`),
@@ -792,7 +864,11 @@
           fetch(AEROPATH_CONTENT_URL)
             .then((res) => res.ok ? res.json() : null)
             .then((data) => {
-              if (active && data) setContent(mapAeroPathContent(data));
+              if (active && data) {
+                const mapped = mapAeroPathContent(data);
+                setContent(mapped);
+                applyCmsSeo(mapped.site, data.agency);
+              }
             })
             .catch(() => {});
 
@@ -805,8 +881,8 @@
       // =============================================================================
       // SHARED PRIMITIVES
       // =============================================================================
-      const waLink = (msg = "Hi EduFlex Global, I'd like a quick consultation.") =>
-        `https://wa.me/${PHONE_RAW}?text=${encodeURIComponent(msg)}`;
+      const waLink = (msg = "Hi EduFlex Global, I'd like a quick consultation.", phoneRaw = PHONE_RAW) =>
+        `https://wa.me/${phoneRaw}?text=${encodeURIComponent(msg)}`;
 
       const Eyebrow = ({ children, className = "" }) => (
         <span className={`accent-text font-mono text-[10px] uppercase font-black tracking-mega ${className}`}>{children}</span>
@@ -886,9 +962,12 @@
       // =============================================================================
       // SECTIONS
       // =============================================================================
-      function Navbar() {
+      function Navbar({ site }) {
         const [open, setOpen] = useState(false);
         const [scrolled, setScrolled] = useState(false);
+        const contact = site?.contact || {};
+        const phoneRaw = phoneDigits(contact.whatsapp || contact.phone);
+        const phoneDisplay = firstText(contact.phone, PHONE_DISPLAY);
         useEffect(() => {
           const onScroll = () => setScrolled(window.scrollY > 24);
           window.addEventListener("scroll", onScroll); onScroll();
@@ -896,7 +975,7 @@
         }, []);
         const links = [
           ["Destinations", "#destinations"], ["Why EduFlex", "#why"], ["Process", "#process"],
-          ["Stories", "#stories"], ["Founders", "#founder"], ["Team", "#team"],
+          ["Stories", "#stories"], ["About", "#about"], ["Founders", "#founder"], ["Team", "#team"],
           ["Blog", "#blog"], ["Contact", "#contact"],
         ];
         return (
@@ -908,11 +987,11 @@
                   <a key={href} href={href} className="text-[11px] font-bold uppercase tracking-widest text-zinc-800 hover:accent-text transition-colors">{label}</a>
                 ))}
                 <span className="h-4 w-px bg-zinc-200" />
-                <a href={`tel:${PHONE_RAW}`} className="flex items-center gap-2 text-zinc-900 font-bold text-sm">
-                  <Icon name="phone" size={15} className="accent-text" /> {PHONE_DISPLAY}
+                <a href={`tel:${phoneRaw}`} className="flex items-center gap-2 text-zinc-900 font-bold text-sm">
+                  <Icon name="phone" size={15} className="accent-text" /> {phoneDisplay}
                 </a>
                 <Btn href={STUDENT_PORTAL_URL} target="_blank">Student Portal</Btn>
-                <Btn primary href={waLink()} target="_blank" icon={<Icon name="arrow" size={14} />}>Free Consultation</Btn>
+                <Btn primary href={waLink(undefined, phoneRaw)} target="_blank" icon={<Icon name="arrow" size={14} />}>Free Consultation</Btn>
               </div>
               <button className="lg:hidden p-4" onClick={() => setOpen(!open)}>
                 <Icon name={open ? "x" : "menu"} size={22} />
@@ -930,7 +1009,7 @@
                     <a key={href} href={href} onClick={() => setOpen(false)} className="text-xs font-black tracking-widest uppercase text-zinc-600 py-2">{label}</a>
                   ))}
                   <Btn href={STUDENT_PORTAL_URL} target="_blank" className="mt-2">Student Portal</Btn>
-                  <Btn primary href={waLink()} target="_blank" className="mt-2 mb-2">Free Consultation</Btn>
+                  <Btn primary href={waLink(undefined, phoneRaw)} target="_blank" className="mt-2 mb-2">Free Consultation</Btn>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -938,8 +1017,20 @@
         );
       }
 
-      function Hero({ dark }) {
+      function Hero({ dark, site }) {
         const containerRef = useRef(null);
+        const hero = site?.hero || {};
+        const contact = site?.contact || {};
+        const phoneRaw = phoneDigits(contact.whatsapp || contact.phone);
+        const headline = firstText(hero.headline, "Your compass to success");
+        const heroWords = headline.split(/\s+/).filter(Boolean);
+        const splitAt = Math.min(2, Math.max(1, Math.ceil(heroWords.length / 2)));
+        const subheadline = firstText(
+          hero.subheadline,
+          "EduFlex Global is a premium student consultancy. We don't just process visas; we architect international careers with 100% transparency."
+        );
+        const ctaLabel = firstText(hero.cta_label, "WhatsApp a Counsellor");
+        const ctaUrl = firstText(hero.cta_url, waLink(undefined, phoneRaw));
         const [stats, setStats] = useState([
           { label: "Visa Success", val: 0, target: 98, suffix: "%" },
           { label: "Students Placed", val: 0, target: 1000, suffix: "+" },
@@ -966,15 +1057,21 @@
         }, []);
 
         // Two-line hero structure for maximum impact
-        const line1 = ["Your", "compass"];
-        const line2 = ["to", "success"];
-        const line1Depths = [20, 30];
-        const line2Depths = [15, 25];
+        const line1 = heroWords.slice(0, splitAt);
+        const line2 = heroWords.slice(splitAt);
+        const line1Depths = [20, 30, 18, 24];
+        const line2Depths = [15, 25, 20, 28];
 
         return (
           <section ref={containerRef} id="top" className={`relative min-h-screen pt-20 sm:pt-28 overflow-hidden grain perspective-container ${dark ? "hero-dark" : "bg-white"}`}>
             {/* Animated Gradient Orbs */}
             <div className="absolute inset-0 -z-10 overflow-hidden">
+              {hero.background_image_url ? (
+                <>
+                  <img src={hero.background_image_url} alt="" referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover opacity-20" />
+                  <div className="absolute inset-0 bg-white/70" />
+                </>
+              ) : null}
               <div className="orb-1 absolute -top-20 -right-20 w-[40rem] h-[40rem] rounded-full blur-[100px]" style={{ background: "var(--accent-soft)" }} />
               <div className="orb-2 absolute top-1/2 -left-32 w-[30rem] h-[30rem] rounded-full blur-[80px] opacity-60" style={{ background: "#FFE4D1" }} />
               <div className="orb-3 absolute bottom-0 right-1/4 w-[25rem] h-[25rem] rounded-full blur-[60px] opacity-50" style={{ background: "#FFF0E6" }} />
@@ -1009,7 +1106,7 @@
                         key={`l1-${i}`}
                         className="inline-block overflow-visible mr-[0.15em] last:mr-0 py-2"
                         style={{
-                          transform: `translateZ(${line1Depths[i]}px)`,
+                          transform: `translateZ(${line1Depths[i % line1Depths.length]}px)`,
                           transition: "transform 0.1s ease-out"
                         }}
                       >
@@ -1035,7 +1132,7 @@
                         key={`l2-${i}`}
                         className="inline-block overflow-visible mr-[0.15em] last:mr-0 py-2"
                         style={{
-                          transform: `translateZ(${line2Depths[i]}px)`,
+                          transform: `translateZ(${line2Depths[i % line2Depths.length]}px)`,
                           transition: "transform 0.1s ease-out"
                         }}
                       >
@@ -1043,7 +1140,7 @@
                           initial={{ y: "100%", opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
                           transition={{ delay: 0.5 + (i * 0.08), duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                          className={`hero-word inline-block ${word.includes("success") ? "accent-text" : "text-ink"}`}
+                          className={`hero-word inline-block ${i === line2.length - 1 ? "accent-text" : "text-ink"}`}
                           whileHover={{ scale: 1.02 }}
                         >
                           {word}
@@ -1061,8 +1158,7 @@
                   transition={{ delay: 1, duration: 0.8 }}
                   className="max-w-xl text-zinc-500 text-lg md:text-xl leading-relaxed"
                 >
-                  EduFlex Global is a premium student consultancy. We don't just process visas;
-                  we architect international careers with 100% transparency.
+                  {subheadline}
                 </motion.p>
 
                 <motion.div
@@ -1072,8 +1168,8 @@
                   className="flex flex-wrap gap-4"
                 >
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-                    <Btn primary href={waLink()} target="_blank" className="magnetic-btn ripple glow-accent">
-                      WhatsApp a Counsellor
+                    <Btn primary href={ctaUrl} target="_blank" className="magnetic-btn ripple glow-accent">
+                      {ctaLabel}
                       <motion.span animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
                         <Icon name="arrow" size={14} className="ml-2" />
                       </motion.span>
@@ -1112,6 +1208,47 @@
                   </motion.div>
                 ))}
               </motion.div>
+            </div>
+          </section>
+        );
+      }
+
+
+      function About({ site }) {
+        const about = site?.about || {};
+        const heading = firstText(about.heading);
+        const body = firstText(about.body);
+        if (!heading && !body && !about.image_url) return null;
+
+        return (
+          <section id="about" className="py-20 md:py-28 px-6 md:px-12 bg-zinc-950 text-white border-y border-white/10 overflow-hidden">
+            <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.7 }}
+                className="lg:col-span-7"
+              >
+                <div className="flex items-center gap-4 mb-6"><Eyebrow>About EduFlex</Eyebrow><div className="h-px w-12 accent-bg" /></div>
+                <h2 className="font-display text-5xl md:text-7xl leading-[0.85] mb-8">
+                  {heading || "Student guidance with operational clarity."}
+                </h2>
+                <p className="max-w-3xl text-zinc-300 text-lg leading-relaxed whitespace-pre-line">
+                  {body || "Published from the AeroPath website dashboard."}
+                </p>
+              </motion.div>
+              {about.image_url ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.7 }}
+                  className="lg:col-span-5 aspect-[4/3] bg-zinc-900 overflow-hidden"
+                >
+                  <img src={about.image_url} alt={heading || "EduFlex Global"} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                </motion.div>
+              ) : null}
             </div>
           </section>
         );
@@ -1666,6 +1803,43 @@
         );
       }
 
+      function MediaLibrary({ assets }) {
+        const items = assets && assets.length ? assets : [];
+        if (!items.length) return null;
+
+        return (
+          <section id="media-library" className="py-24 px-6 md:px-12 bg-zinc-50 border-b rule-border">
+            <SectionHead
+              eyebrow="Media library"
+              title={[{ text: "Latest" }, { text: "published media.", alt: true }]}
+              lede="Reusable images published from the AeroPath website content dashboard." />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-200 border rule-border">
+              {items.map((asset, i) => (
+                <motion.a
+                  key={`${asset.url}-${i}`}
+                  href={asset.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ delay: (i % 4) * 0.06 }}
+                  className="group bg-white min-h-72 flex flex-col overflow-hidden"
+                >
+                  <div className="relative aspect-[4/3] bg-zinc-100 overflow-hidden">
+                    <img src={asset.url} alt={asset.alt} referrerPolicy="no-referrer" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  </div>
+                  <div className="p-5">
+                    <div className="font-mono text-[9px] uppercase tracking-widest font-black accent-text mb-2">{asset.type}</div>
+                    <h3 className="font-bold text-sm text-zinc-900 leading-tight">{asset.title}</h3>
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </section>
+        );
+      }
+
       function FAQ({ faqs }) {
         if (!faqs || !faqs.length) return null;
 
@@ -1764,7 +1938,13 @@
         </div>
       );
 
-      function Contact() {
+      function Contact({ site, destinations }) {
+        const contact = site?.contact || {};
+        const phoneRaw = phoneDigits(contact.whatsapp || contact.phone);
+        const phoneDisplay = firstText(contact.phone, PHONE_DISPLAY);
+        const email = firstText(contact.email, EMAIL);
+        const addressLines = splitAddress(contact.address);
+        const destinationOptions = destinations && destinations.length ? destinations : DESTINATIONS;
         const [f, setF] = useState({ name: "", phone: "", destination: "", goal: "", agreed: false });
         const valid = f.name.trim() && f.phone.trim() && f.destination && f.goal.trim() && f.agreed;
         const [sent, setSent] = useState(false);
@@ -1773,7 +1953,7 @@
           e.preventDefault();
           if (!valid) return;
           const msg = `Hi EduFlex Global!\n\nName: ${f.name}\nPhone: ${f.phone}\nDestination: ${f.destination}\nGoal: ${f.goal}\n\nLooking forward to hearing from you.`;
-          window.open(`https://wa.me/${PHONE_RAW}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+          window.open(`https://wa.me/${phoneRaw}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
           setSent(true);
           setTimeout(() => setSent(false), 4000);
         };
@@ -1797,22 +1977,22 @@
                 </p>
 
                 <div className="flex flex-col gap-5 mb-12">
-                  <a href={`tel:${PHONE_RAW}`} className="flex items-center gap-5 group">
+                  <a href={`tel:${phoneRaw}`} className="flex items-center gap-5 group">
                     <span className="w-12 h-12 rounded-full border rule-border flex items-center justify-center group-hover:accent-bg group-hover:text-white group-hover:accent-border transition-all">
                       <Icon name="phone" size={18} />
                     </span>
                     <div>
                       <div className="font-mono text-[10px] uppercase tracking-widest font-black text-zinc-400">Phone & WhatsApp</div>
-                      <div className="font-black text-xl group-hover:accent-text transition-colors">{PHONE_DISPLAY}</div>
+                      <div className="font-black text-xl group-hover:accent-text transition-colors">{phoneDisplay}</div>
                     </div>
                   </a>
-                  <a href={`mailto:${EMAIL}`} className="flex items-center gap-5 group">
+                  <a href={`mailto:${email}`} className="flex items-center gap-5 group">
                     <span className="w-12 h-12 rounded-full border rule-border flex items-center justify-center group-hover:accent-bg group-hover:text-white group-hover:accent-border transition-all">
                       <Icon name="mail" size={18} />
                     </span>
                     <div>
                       <div className="font-mono text-[10px] uppercase tracking-widest font-black text-zinc-400">Email us</div>
-                      <div className="font-bold text-base group-hover:accent-text transition-colors">{EMAIL}</div>
+                      <div className="font-bold text-base group-hover:accent-text transition-colors">{email}</div>
                     </div>
                   </a>
                   <div className="flex items-start gap-5">
@@ -1821,7 +2001,7 @@
                     </span>
                     <div>
                       <div className="font-mono text-[10px] uppercase tracking-widest font-black text-zinc-400">Visit us</div>
-                      {ADDRESS_LINES.map((l, i) => <div key={i} className={`text-zinc-${i === ADDRESS_LINES.length - 1 ? "500" : "900"} ${i === 0 ? "font-bold" : ""}`}>{l}</div>)}
+                      {addressLines.map((l, i) => <div key={i} className={`text-zinc-${i === addressLines.length - 1 ? "500" : "900"} ${i === 0 ? "font-bold" : ""}`}>{l}</div>)}
                     </div>
                   </div>
                 </div>
@@ -1868,7 +2048,7 @@
                       <select value={f.destination} onChange={e => setF({ ...f, destination: e.target.value })} required
                         className="w-full bg-zinc-900 border border-white/10 px-4 py-3.5 text-sm font-medium outline-none focus:border-current focus:accent-text appearance-none cursor-pointer">
                         <option value="">Select a country —</option>
-                        {DESTINATIONS.map(d => <option key={d.code} value={d.name}>{d.flag}  {d.name}</option>)}
+                        {destinationOptions.map(d => <option key={d.code || d.name} value={d.name}>{d.flag || "â—†"}  {d.name}</option>)}
                         <option value="Other">Not sure yet — help me decide</option>
                       </select>
                     </div>
@@ -1904,7 +2084,7 @@
                 </p>
               </div>
               <div className="md:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-8">
-                <FootCol title="Destinations" links={DESTINATIONS.slice(0, 4).map(d => [d.name, "#destinations"])} />
+                <FootCol title="Destinations" links={destinationOptions.slice(0, 4).map(d => [d.name, "#destinations"])} />
                 <FootCol title="Services"     links={[["Why EduFlex","#why"],["Process","#process"],["Stories","#stories"],["Team","#team"]]} />
                 <FootCol title="Resources"    links={[["Student Portal",STUDENT_PORTAL_URL],["Blog","#blog"],["Engagement","#engagement"],["Contact","#contact"]]} />
               </div>
@@ -1917,10 +2097,12 @@
         );
       }
 
-      function FloatingWA() {
+      function FloatingWA({ site }) {
+        const contact = site?.contact || {};
+        const phoneRaw = phoneDigits(contact.whatsapp || contact.phone);
         return (
           <motion.a 
-            href={waLink()} target="_blank" rel="noopener noreferrer"
+            href={waLink(undefined, phoneRaw)} target="_blank" rel="noopener noreferrer"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 260, damping: 20, delay: 1 }}
@@ -2023,8 +2205,9 @@
         return (
           <div data-screen-label="EduFlex Global Home">
             <CinematicIntro />
-            <Navbar />
-            <Hero dark={t.darkHero} />
+            <Navbar site={aeroPath.site} />
+            <Hero dark={t.darkHero} site={aeroPath.site} />
+            <About site={aeroPath.site} />
             <Destinations destinations={aeroPath.destinations} />
             <Programmes programmes={aeroPath.programmes} />
             <Universities universities={aeroPath.universities} />
@@ -2034,10 +2217,11 @@
             <Founder />
             <Team team={aeroPath.team} />
             {t.showEngagement && <Engagement photos={aeroPath.photos} />}
+            <MediaLibrary assets={aeroPath.mediaLibrary} />
             {t.showBlog && <Blog posts={aeroPath.blogPosts} />}
             <FAQ faqs={aeroPath.faqs} />
-            <Contact />
-            <FloatingWA />
+            <Contact site={aeroPath.site} destinations={aeroPath.destinations} />
+            <FloatingWA site={aeroPath.site} />
           </div>
         );
       }
